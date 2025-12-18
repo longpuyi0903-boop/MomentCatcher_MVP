@@ -1,7 +1,0 @@
-{
-  "name": "Celestial Typography & AI Image Studio",
-  "description": "An interactive design tool to explore typography layouts for space themes and use Gemini 2.5 Flash Image for AI-driven image editing.",
-  "requestFramePermissions": [
-    "camera"
-  ]
-}

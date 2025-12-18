@@ -20,7 +20,7 @@ if __name__ == "__main__":
     print("   ✅ POST /api/tts - 文本转语音")
     print("="*60)
     
-    # Railway/云端部署：使用环境变量PORT，监听0.0.0.0
+    # 云端部署：使用环境变量PORT，监听0.0.0.0
     port = int(os.environ.get("PORT", 8000))
     host = os.environ.get("HOST", "0.0.0.0")
     
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     print(f"🔗 API 地址: http://{host}:{port}")
     print("="*60 + "\n")
     
-    # 生产环境禁用reload（Railway等云端平台）
+    # 生产环境禁用reload（云端部署平台）
     reload = os.environ.get("ENV") != "production"
     
     uvicorn.run(

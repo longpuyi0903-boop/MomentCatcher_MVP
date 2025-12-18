@@ -1,7 +1,0 @@
-{
-  "name": "Moment Catcher: Interstellar AI",
-  "description": "A sci-fi romantic companion AI inspired by Interstellar, featuring a cinematic landing page and particle-based voice interaction.",
-  "requestFramePermissions": [
-    "microphone"
-  ]
-}

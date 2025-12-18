@@ -37,37 +37,32 @@
 
 ### 方案：后端部署到云端（无需开电脑）
 
-**推荐平台：Railway（最简单）** ⭐
+**推荐平台：Render.com（完全免费，支持伪App）** ⭐
 
-#### 为什么选择Railway：
-- ✅ 免费额度（每月$5，足够个人使用）
+#### 为什么选择 Render.com：
+- ✅ 完全免费（Web 服务免费计划）
 - ✅ 一键部署（连接GitHub）
 - ✅ 自动HTTPS
 - ✅ 稳定地址（不会变）
 - ✅ 支持Python/FastAPI
+- ✅ 支持静态网站（可以部署前端）
+- ✅ 手机端完美支持（伪App效果）
 - ✅ 无需一直开电脑
 
 ---
 
-## Railway部署步骤（10分钟）
+## Render.com 部署步骤（15分钟）
 
-### 步骤1：准备代码
-确保项目有 `requirements.txt` 和 `Procfile`
+详细步骤请参考：`RENDER_DEPLOY_GUIDE.md`
 
-### 步骤2：部署到Railway
-1. 访问 https://railway.app
-2. 用GitHub账号登录
-3. 点击 "New Project" → "Deploy from GitHub repo"
-4. 选择你的仓库
-5. Railway会自动检测Python项目并部署
+### 快速概述：
+1. 部署后端（Web Service）：连接 GitHub → 配置 → 获取后端地址
+2. 部署前端（Static Site）：连接 GitHub → 配置环境变量 → 获取前端地址
+3. 手机端访问：添加到主屏幕即可
 
-### 步骤3：设置环境变量
-- Railway会自动生成HTTPS地址（类似：`https://xxx.up.railway.app`）
-- 这个地址是固定的，不会变
-
-### 步骤4：更新Netlify环境变量
-- 在Netlify设置 `VITE_API_BASE_URL` = `https://xxx.up.railway.app/api`
-- 重新部署前端
+### 步骤4：更新前端环境变量
+- 在 Render Static Site 设置 `VITE_API_BASE_URL` = `https://你的后端地址.onrender.com/api`
+- Render 会自动重新构建
 
 ---
 
@@ -91,15 +86,15 @@
 3. 重新部署前端（确保环境变量生效）
 
 **长期方案**：
-- 后端部署到Railway（10分钟，一次部署，永久可用）
-- 前端继续用Netlify（已经部署好了）
+- 后端和前端都部署到 Render.com（15分钟，一次部署，永久可用）
+- 或者后端用 Render，前端继续用 Netlify
 - 这样朋友随时可以访问，你不需要开电脑
 
 ---
 
-## Railway vs 当前方案对比
+## Render.com vs 当前方案对比
 
-| 方案 | 当前（本地+ngrok） | Railway |
+| 方案 | 当前（本地+ngrok） | Render.com |
 |------|------------------|---------|
 | 需要开电脑 | ✅ 是 | ❌ 否 |
 | 地址稳定性 | ❌ 会变 | ✅ 固定 |

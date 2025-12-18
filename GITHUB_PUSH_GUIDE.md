@@ -143,13 +143,9 @@ GitHub现在不允许用密码推送，需要使用 **Personal Access Token**：
 
 ## 完成后的下一步
 
-推送成功后，你就可以在Railway上部署了：
+推送成功后，你就可以在 Render.com 上部署了：
 
-1. 访问 https://railway.app
-2. 登录（用GitHub账号）
-3. "New Project" → "Deploy from GitHub repo"
-4. 选择 `MomentCatcher_MVP` 仓库
-5. Railway会自动检测并部署
+详细步骤请参考：`RENDER_DEPLOY_GUIDE.md`
 
 ---
 
