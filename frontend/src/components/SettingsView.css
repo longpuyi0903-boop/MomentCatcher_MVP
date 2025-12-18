@@ -1,0 +1,285 @@
+/* ============================================
+   Phase 1: P0 - 设置页面优化
+   1:1 复刻参考代码设计（interstellar-ai）
+   ============================================ */
+
+/* 背景遮罩 */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 对话框容器 */
+.settings-view {
+  width: 420px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 1);
+  position: relative;
+  border-radius: 2px;
+  padding: 1px;
+}
+
+/* 内部容器 */
+.settings-inner {
+  position: relative;
+  padding: 3rem;
+  z-index: 10;
+  background: #080808;
+  border-radius: 2px;
+}
+
+.settings-close-btn {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  z-index: 10;
+}
+
+.settings-close-btn:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.settings-close-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.settings-title {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: 14px;
+  letter-spacing: 0.4em;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 4rem;
+  font-weight: bold;
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-bottom: 4rem;
+  padding: 0 0.5rem;
+}
+
+.config-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.config-label {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.25);
+  text-transform: uppercase;
+}
+
+
+.settings-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0;
+  padding-top: 0;
+  margin-bottom: 0;
+}
+
+.settings-reset-core-btn,
+.settings-commit-btn {
+  flex: 1;
+  padding: 1rem 0;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.settings-reset-core-btn {
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.settings-reset-core-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.settings-commit-btn {
+  background: rgba(69, 26, 3, 0.4);
+  color: rgba(252, 211, 77, 0.7);
+  border: 1px solid rgba(180, 83, 9, 0.2);
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.settings-commit-btn:hover:not(:disabled) {
+  background: rgba(69, 26, 3, 0.6);
+  border-color: rgba(180, 83, 9, 0.3);
+}
+
+.settings-reset-core-btn:disabled,
+.settings-commit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* 输入框容器 */
+.settings-input-wrapper {
+  width: 60%;
+  position: relative;
+}
+
+/* 输入框样式（1:1 复刻参考代码） */
+.settings-input {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: 24px;
+  font-style: italic;
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  padding: 0.25rem 0.5rem 0.25rem 0;
+  width: 100%;
+  text-align: right;
+  transition: all 0.3s ease;
+}
+
+.settings-input:focus {
+  outline: none;
+}
+
+.settings-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.settings-input::placeholder {
+  color: rgba(255, 255, 255, 0.05);
+}
+
+/* 输入框下划线（渐变效果） */
+.settings-input-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+  pointer-events: none;
+}
+
+.companion-input {
+  color: #cbd5e1;
+}
+
+.traveler-input {
+  color: #94a3b8;
+}
+
+/* 消息提示容器 */
+.settings-message-container {
+  margin-top: 1rem;
+}
+
+/* 消息提示 */
+.settings-message {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: 0.9rem;
+  text-align: center;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settings-error {
+  background: rgba(255, 99, 71, 0.2);
+  color: #ff6347;
+  border: 1px solid #ff6347;
+}
+
+.settings-success {
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  border: 1px solid #667eea;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .settings-view {
+    width: 90%;
+    max-width: 420px;
+  }
+
+  .settings-inner {
+    padding: 2rem;
+  }
+
+  .settings-title {
+    font-size: 12px;
+  }
+
+  .settings-input {
+    font-size: 20px;
+  }
+
+  .settings-buttons {
+    flex-direction: column;
+  }
+
+  .settings-reset-core-btn,
+  .settings-commit-btn {
+    width: 100%;
+  }
+}

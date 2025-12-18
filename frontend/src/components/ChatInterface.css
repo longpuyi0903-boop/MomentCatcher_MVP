@@ -1,0 +1,674 @@
+/* ============================================
+   Phase 1: P0 - ChatInterface 5块状态信息
+   修复版本：对话框居中，选择页隐藏主按钮
+   ============================================ */
+
+/* ============================================
+   Live Conversation Viewport - 固定高度单屏布局
+   禁止页面滚动，对话区域由布局计算高度
+   ============================================ */
+.chat-interface {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; /* 严禁滚动 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  background: transparent;
+}
+
+/* 背景选择器包装容器 */
+.background-carousel-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+}
+
+/* 流星雨特效期间的提示文字 */
+.warping-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.warping-text {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.625rem; /* text-[10px] */
+  letter-spacing: 0.8em; /* tracking-[0.8em] */
+  color: rgba(255, 255, 255, 0.6); /* text-white/60 */
+  text-transform: uppercase;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.warping-line {
+  width: 12rem; /* w-48 */
+  height: 0.5px;
+  background-color: rgba(255, 255, 255, 0.1); /* bg-white/10 */
+  position: relative;
+  overflow: hidden;
+}
+
+.warping-progress {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.4); /* bg-white/40 */
+  width: 100%;
+  animation: warp 1.5s infinite;
+}
+
+@keyframes warp {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 主内容容器 */
+.chat-interface-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* 1:1 复刻参考代码：主页面入场动画 */
+.fade-in-chat {
+  animation: fadeInChat 3s ease-out;
+}
+
+@keyframes fadeInChat {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+/* 1. 顶部状态 (压缩间距) */
+.status-block {
+  flex-shrink: 0;
+  width: 100%;
+  padding-top: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 1. 音频处理状态（顶部） */
+.status-audio {
+  margin-top: clamp(0.5rem, 2vh, 1.5rem);
+}
+
+.status-badge {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  color: var(--text-gray);
+  padding: 0.5rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  background: var(--bg-panel);
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.status-badge.receiving {
+  color: var(--glow-blue);
+  border-color: var(--glow-blue);
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+.status-badge.processing {
+  color: var(--emotion-surprise);
+  border-color: var(--emotion-surprise);
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
+}
+
+.status-badge.link-active {
+  color: var(--text-gray-light);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 2. 情绪状态（第二层） */
+.status-emotion {
+  margin-top: clamp(0.5rem, 2vh, 1.5rem);
+}
+
+.emotion-text {
+  font-family: 'Courier New', monospace;
+  font-size: 1.4rem;
+  color: #fff;
+}
+
+/* 3. 最近说话人（第三层） */
+.status-speaker {
+  margin-top: clamp(0.5rem, 2vh, 1.5rem);
+}
+
+.speaker-text {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ============================================
+   4. 实时字幕区域 - 电影演职人员表滚动效果
+   ============================================ */
+.status-block.status-subtitle {
+  margin-top: clamp(1rem, 3vh, 2rem);
+  margin-bottom: clamp(0.75rem, 2vh, 1.5rem);
+  width: 100%;
+  max-width: min(90vw, 650px);
+  height: 7em;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 字幕外层容器 */
+.subtitle-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 字幕内容 */
+.subtitle-text {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: 1.1rem;
+  color: var(--text-white);
+  background: transparent;
+  border: none;
+  padding: 0 1rem;
+  width: 100%;
+  line-height: 1.5;
+  text-align: justify;
+  text-justify: inter-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.subtitle-text.scrolling {
+  animation: scrollUp var(--scroll-duration, 10s) linear forwards;
+}
+
+@keyframes scrollUp {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--scroll-distance, -100px));
+  }
+}
+
+.subtitle-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1em;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6) 0%,
+    transparent 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* 4. 记忆存储文字 */
+.status-saving {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.saving-text {
+  /* 保留源代码字体样式 */
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  /* 毛玻璃效果 - 偏透明的白色系，最透明，显眼度最低 */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  /* 显眼度最低：边框最淡 */
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  /* 显眼度最低：字体颜色最淡 */
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 5. 底部输入框 (强制固定在底部) */
+.hidden-input-area {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 450px;
+  height: 50px;
+  display: flex;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 5px 15px;
+  z-index: 100;
+}
+
+.chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+}
+
+.send-btn {
+  background: transparent;
+  border: none;
+  color: #667eea;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 10px;
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+}
+
+/* 右侧浮动操作按钮（1:1 复刻参考设计） */
+.floating-side-buttons {
+  position: fixed;
+  right: 2.5rem; /* right-10 */
+  top: 50%;
+  transform: translateY(-50%); /* 垂直居中 */
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem; /* gap-12 */
+  pointer-events: auto;
+}
+
+.side-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.5s ease; /* duration-500 */
+  padding: 0;
+}
+
+.side-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 竖线 */
+.side-button-line {
+  position: relative;
+  width: 1px; /* w-px */
+  height: 3.5rem; /* 放大：从 h-10 (2.5rem) 增加到 3.5rem */
+  background: rgba(39, 39, 42, 1); /* bg-zinc-800 */
+  transition: all 0.5s ease;
+}
+
+.side-action-btn.group:hover .side-button-line {
+  background: rgba(255, 255, 255, 0.4); /* group-hover:bg-white/40 */
+}
+
+.side-button-line-top {
+  /* 第一个按钮的竖线在上方 */
+}
+
+.side-button-line-bottom {
+  /* 第二个按钮的竖线在下方 */
+}
+
+/* 竖线上的圆点 */
+.side-button-dot {
+  position: absolute;
+  width: 0.5rem; /* 放大：从 w-1.5 (0.375rem) 增加到 0.5rem */
+  height: 0.5rem; /* 放大：从 h-1.5 (0.375rem) 增加到 0.5rem */
+  background: rgba(39, 39, 42, 1); /* bg-zinc-800 */
+  border: 1px solid rgba(0, 0, 0, 1); /* border border-black */
+  border-radius: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 0.5s ease;
+}
+
+.side-button-dot-top {
+  top: 0;
+}
+
+.side-button-dot-bottom {
+  bottom: 0;
+}
+
+.side-action-btn.group:hover .side-button-dot {
+  background: rgba(255, 255, 255, 1); /* group-hover:bg-white */
+}
+
+/* 按钮内容区域 */
+.side-button-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 图标 */
+.side-button-icon {
+  color: rgba(82, 82, 91, 1); /* text-zinc-600 */
+  transition: all 0.5s ease;
+  flex-shrink: 0;
+  width: 20px; /* 放大：从 16px 增加到 20px */
+  height: 20px; /* 放大：从 16px 增加到 20px */
+}
+
+.side-action-btn.group:hover .side-button-icon {
+  color: rgba(255, 255, 255, 1); /* group-hover:text-white */
+}
+
+/* Refresh按钮的图标旋转动画 */
+.side-action-btn-refresh.group:hover .side-button-icon {
+  transform: rotate(-90deg);
+  transition: all 0.7s ease; /* duration-700 */
+}
+
+/* 文字标签（hover时显示） */
+.side-button-label {
+  font-size: 0.625rem; /* 放大：从 0.5rem (8px) 增加到 0.625rem (10px) */
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.4em; /* tracking-[0.4em] */
+  color: rgba(82, 82, 91, 1); /* text-zinc-600 */
+  writing-mode: vertical-rl; /* 垂直文字 */
+  opacity: 0;
+  transition: all 0.5s ease;
+  white-space: nowrap;
+}
+
+.side-button-label-refresh {
+  margin-top: 1.25rem; /* 放大：从 1rem 增加到 1.25rem */
+  transform: translateY(0.5rem); /* translate-y-2 */
+}
+
+.side-button-label-archive {
+  margin-bottom: 1.25rem; /* 放大：从 1rem 增加到 1.25rem */
+  transform: translateY(-0.5rem); /* -translate-y-2 */
+}
+
+.side-action-btn.group:hover .side-button-label {
+  opacity: 1;
+  color: rgba(212, 212, 216, 1); /* group-hover:text-zinc-300 */
+}
+
+.side-action-btn.group:hover .side-button-label-refresh {
+  transform: translateY(0); /* group-hover:translate-y-0 */
+}
+
+.side-action-btn.group:hover .side-button-label-archive {
+  transform: translateY(0); /* group-hover:translate-y-0 */
+}
+
+/* ============================================
+   对话区域容器 - 核心修复：往上对齐
+   ============================================ */
+.voice-conversation-area {
+  flex: 1;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  /* 核心修复：改为往上对齐 */
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  /* 预留底部输入框空间 */
+  padding-bottom: 100px;
+  /* 添加顶部padding，让内容往上移动 */
+  padding-top: 40px;
+}
+
+/* AI发言框 - 调整成和User框相同高度 */
+.voice-ai-speech {
+  width: 100%;
+  max-width: 28rem; /* max-w-md */
+  padding: 0.75rem 1.5rem; /* 调整为和User框相同的padding */
+  /* 1:1 复刻参考代码：bg-black/50 backdrop-blur-xl border border-white/5 */
+  background: rgba(0, 0, 0, 0.5); /* bg-black/50 */
+  backdrop-filter: blur(24px); /* backdrop-blur-xl */
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.05); /* border-white/5 */
+  border-radius: 0; /* 移除圆角 */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+  transition: all 1s ease; /* transition-all duration-1000 */
+  
+  /* 移除固定高度，让高度自适应和User框一致 */
+  flex-shrink: 0;
+  
+  /* 布局：内容居中 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  
+  /* 1:1 复刻参考代码：text-white/80 dreamy-font glow-text-dreamy */
+  font-family: 'Tenor Sans', 'Space Grotesk', sans-serif; /* dreamy-font */
+  text-align: center;
+  word-wrap: break-word;
+  font-style: normal; /* 移除斜体 */
+  
+  color: rgba(255, 255, 255, 0.8); /* text-white/80 */
+  font-size: 1.125rem; /* text-lg */
+  line-height: 1.75; /* leading-relaxed */
+  font-weight: 300; /* font-light */
+  letter-spacing: 0.025em; /* tracking-wide */
+  
+  /* 1:1 复刻参考代码：glow-text-dreamy */
+  text-shadow: 
+    0 0 10px rgba(130, 160, 255, 0.1),
+    0 0 20px rgba(130, 160, 255, 0.05),
+    0 0 25px rgba(130, 160, 255, 0.05);
+  
+  /* 移除顶部渐隐遮罩，让内容完整显示 */
+}
+
+/* 内容容器 */
+.voice-ai-speech-content,
+.voice-user-speech-content {
+  width: 100%;
+  animation: none;
+}
+
+/* 用户发言框 - 与Agent框背景一致 */
+.voice-user-speech {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.75rem 1.5rem;
+  
+  /* 保留源代码布局属性 - 与Agent框保持一致 */
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  
+  /* 与Agent框背景一致 */
+  background: rgba(0, 0, 0, 0.5); /* 与Agent框相同的背景 */
+  backdrop-filter: blur(24px); /* 和Agent框相同的blur值 */
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.05); /* 与Agent框相同的边框 */
+  border-radius: 0; /* 无圆角 */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* 与Agent框相同的阴影 */
+  
+  /* 保留源代码字体样式 */
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  word-wrap: break-word;
+  text-align: center;
+  font-weight: 300;
+  font-size: 0.95rem;
+  /* 显眼度递减：字体颜色更淡，但确保可见 */
+  color: rgba(255, 255, 255, 0.7); /* 比agent框稍淡，但保持可见 */
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   背景选择器样式
+   ============================================ */
+.background-selector {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.background-image {
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .floating-side-buttons {
+    right: 1rem;
+    gap: 2rem;
+  }
+  
+  .side-button-icon {
+    width: 18px; /* 移动端也放大 */
+    height: 18px;
+  }
+  
+  .side-button-label {
+    font-size: 0.55rem; /* 移动端也放大 */
+  }
+  
+  .side-button-line {
+    height: 3rem; /* 移动端竖线也放大 */
+  }
+  
+  .side-button-dot {
+    width: 0.45rem; /* 移动端圆点也放大 */
+    height: 0.45rem;
+  }
+  
+  .chat-interface {
+    padding: 1rem 0.5rem;
+    gap: 1rem;
+  }
+
+  .emotion-text {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .subtitle-text {
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .hidden-input-area {
+    bottom: 100px;
+    width: 95%;
+  }
+
+  .floating-side-buttons {
+    right: 1rem; /* 移动端调整位置 */
+    gap: 2rem; /* 减少间距 */
+  }
+
+  .voice-ai-speech {
+    padding: 0.75rem 1.5rem; /* 和User框保持一致 */
+    font-size: 1rem;
+  }
+
+  .voice-user-speech {
+    font-size: 0.9rem;
+  }
+
+  .voice-conversation-area {
+    padding-bottom: 120px;
+  }
+}
+
+/* 小屏幕优化 */
+@media (max-width: 480px) {
+  .voice-ai-speech {
+    padding: 0.75rem 1.5rem; /* 和User框保持一致 */
+    font-size: 0.95rem;
+    border-radius: 0; /* 移除圆角 */
+  }
+  
+  .voice-conversation-area {
+    max-width: 95%;
+    gap: 15px;
+  }
+}

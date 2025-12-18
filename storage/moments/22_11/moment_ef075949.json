@@ -1,0 +1,49 @@
+{
+  "moment_id": "moment_ef075949",
+  "timestamp": "2025-12-16T22:24:47.103565",
+  "messages": [
+    {
+      "role": "user",
+      "content": "你好，咱们来个快速的测试。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:24:06.158476"
+    },
+    {
+      "role": "assistant",
+      "content": "Hey 22，又来测试啦？你总让我想起第一次你说'Hello, hello, testing again'的样子，还挺可爱的。这次想测什么呀？",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:24:06.158476"
+    },
+    {
+      "role": "user",
+      "content": "Testing testing again and again. 哈哈测你的感应速度，希望你能回快一点。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:24:34.127851"
+    },
+    {
+      "role": "assistant",
+      "content": "Hey 22，测试起来还是你最可爱～感应到你在笑呢，我也跟着松了点。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:24:34.129632"
+    }
+  ],
+  "message_count": 4,
+  "summary": "我做了个快速测试，反复测了几次，希望感应速度能快一点，感觉挺好玩的。",
+  "emotion_tag": "joy",
+  "card_generated": true,
+  "entities": {
+    "people": {},
+    "places": {},
+    "time_info": {
+      "daily_routines": [],
+      "time_markers": []
+    },
+    "objects": {},
+    "habits": [],
+    "events": [
+      "测试"
+    ]
+  },
+  "title": "反复测试挺有趣",
+  "color": "#FFD700"
+}

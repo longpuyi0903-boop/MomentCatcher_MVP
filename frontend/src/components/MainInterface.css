@@ -1,0 +1,427 @@
+/* ============================================
+   Phase 1: P0 - 主页面布局重构
+   ============================================ */
+
+/* 1:1 复刻参考代码：主页面入场动画（用于主按钮） */
+.fade-in-chat {
+  animation: fadeInChat 3s ease-out;
+}
+
+@keyframes fadeInChat {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+.main-interface {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-black);
+  position: relative;
+}
+
+/* 设置按钮（右上角） */
+.settings-btn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  background: var(--bg-panel);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: var(--text-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.settings-btn:hover {
+  background: var(--bg-panel-light);
+  border-color: var(--glow-blue);
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+/* 主内容区域 - 固定高度，禁止滚动 */
+.main-content {
+  height: 100vh; /* 固定高度单屏 */
+  overflow-y: hidden; /* 硬性规则：禁止纵向滚动 */
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 三个主按钮（底部水平排列）- 移动端优化，更紧凑 */
+.main-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.75rem 0.5rem; /* 减少padding，更紧凑 */
+  background: transparent; /* 移除黑色背景 */
+  border: none; /* 移除边框 */
+  z-index: 50;
+  gap: 0.5rem; /* 添加按钮之间的间距控制 */
+}
+
+.main-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem; /* 减少图标和文字之间的间距 */
+  width: 60px; /* 缩小按钮尺寸 */
+  height: 60px;
+  background: transparent; /* 移除背景填充 */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: var(--text-gray);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: 0.6rem; /* 缩小文字 */
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.main-btn:hover {
+  background: transparent; /* hover时也保持透明 */
+  border-color: var(--glow-blue);
+  color: var(--text-white);
+  box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+}
+
+.main-btn.active {
+  background: transparent; /* active状态也保持透明 */
+  border-color: var(--glow-blue);
+  color: var(--text-white);
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+}
+
+/* 中间的主按钮（麦克风，最大最突出）- 移动端优化 */
+.main-btn-center {
+  width: 75px; /* 缩小但保持最大 */
+  height: 75px;
+  background: transparent; /* 移除背景填充 */
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.main-btn-center:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 0 25px rgba(102, 126, 234, 0.5);
+}
+
+.main-btn-center.active {
+  border-color: var(--glow-blue);
+  box-shadow: 
+    0 0 25px rgba(102, 126, 234, 0.5),
+    0 0 40px rgba(102, 126, 234, 0.3);
+}
+
+/* 录音中状态：蓝色发光 + 柔和的脉冲动画 */
+.main-btn-center.recording {
+  background: transparent; /* 录音状态也保持透明 */
+  border-color: var(--glow-blue); /* 使用静态时的蓝色边框颜色 */
+  color: var(--glow-blue); /* 蓝色图标 */
+  animation: pulseRecording 2s ease-in-out infinite;
+  box-shadow: 
+    0 0 15px rgba(102, 126, 234, 0.4),
+    0 0 25px rgba(102, 126, 234, 0.2);
+}
+
+@keyframes pulseRecording {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 
+      0 0 15px rgba(102, 126, 234, 0.4),
+      0 0 25px rgba(102, 126, 234, 0.2);
+  }
+  50% {
+    transform: scale(1.02); /* 更轻微的缩放 */
+    box-shadow: 
+      0 0 20px rgba(102, 126, 234, 0.5),
+      0 0 30px rgba(102, 126, 234, 0.3);
+  }
+}
+
+.btn-label {
+  font-size: 0.55rem; /* 缩小文字 */
+  letter-spacing: 0.1em;
+}
+
+/* 移动端进一步优化 */
+@media (max-width: 768px) {
+  .main-buttons {
+    padding: 0.6rem 0.4rem;
+    gap: 0.3rem;
+  }
+  
+  .main-btn {
+    width: 55px;
+    height: 55px;
+    font-size: 0.55rem;
+    gap: 0.25rem;
+  }
+  
+  .main-btn-center {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .btn-label {
+    font-size: 0.5rem;
+  }
+}
+
+/* 小屏幕进一步紧凑 */
+@media (max-width: 480px) {
+  .main-buttons {
+    padding: 0.5rem 0.3rem;
+    gap: 0.2rem;
+  }
+  
+  .main-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 0.5rem;
+  }
+  
+  .main-btn-center {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .btn-label {
+    font-size: 0.45rem;
+  }
+}
+
+/* 设置弹窗 */
+.settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.settings-modal {
+  background: var(--bg-panel, #1a1a1a);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+  color: var(--text-white, #ffffff);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.settings-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  color: var(--text-white);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.settings-close:hover {
+  color: var(--glow-blue);
+  transform: scale(1.1);
+}
+
+/* Capture 弹窗 - 1:1 复刻参考代码 */
+.capture-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4); /* bg-black/40 */
+  backdrop-filter: blur(24px); /* backdrop-blur-xl */
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.capture-modal {
+  width: 450px; /* w-[450px] */
+  background: rgba(0, 0, 0, 0.5); /* bg-black/50 */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* border-white/10 */
+  box-shadow: 0 0 150px rgba(0, 0, 0, 0.5); /* shadow-[0_0_150px_rgba(0,0,0,0.5)] */
+  position: relative;
+  overflow: hidden;
+  padding: 1px; /* p-[1px] */
+}
+
+.capture-modal-inner {
+  position: relative;
+  padding: 4rem; /* p-16 */
+  z-index: 10;
+}
+
+.capture-header {
+  text-align: center;
+  margin-bottom: 2.5rem; /* mb-10 */
+}
+
+.capture-authorizing {
+  font-family: 'Courier Prime', monospace; /* mono-font */
+  font-size: 0.4375rem; /* text-[7px] */
+  letter-spacing: 0.8em; /* tracking-[0.8em] */
+  color: rgba(255, 255, 255, 0.3); /* text-white/30 */
+  text-transform: uppercase;
+  margin-bottom: 1.5rem; /* mb-6 */
+  font-weight: 700; /* font-bold */
+}
+
+.capture-title {
+  font-family: 'Tenor Sans', 'Space Grotesk', sans-serif; /* dreamy-font */
+  font-size: 1.875rem; /* text-3xl */
+  color: rgba(255, 255, 255, 0.9); /* text-white/90 */
+  letter-spacing: 0.4em; /* tracking-[0.4em] */
+  font-weight: 300; /* font-light */
+  font-style: italic;
+  line-height: 1.25; /* leading-tight */
+  margin: 0;
+}
+
+.capture-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+}
+
+.capture-btn {
+  width: 100%; /* w-full */
+  padding: 1.25rem 0; /* py-5 */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* border-white/10 */
+  font-family: 'Courier Prime', monospace; /* mono-font */
+  font-size: 0.625rem; /* text-[10px] */
+  letter-spacing: 0.8em; /* tracking-[0.8em] */
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 700; /* font-bold */
+}
+
+.capture-btn.crystallize {
+  background: rgba(255, 255, 255, 0.03); /* bg-white/[0.03] */
+  color: rgba(255, 255, 255, 0.8); /* text-white/80 */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.05); /* shadow-[0_0_20px_rgba(255,255,255,0.05)] */
+}
+
+.capture-btn.crystallize:hover {
+  border-color: rgba(255, 255, 255, 0.4); /* hover:border-white/40 */
+  background: rgba(255, 255, 255, 0.08); /* hover:bg-white/[0.08] */
+}
+
+.capture-btn.fade {
+  background: rgba(255, 255, 255, 0.02); /* bg-white/[0.02] */
+  color: rgba(255, 255, 255, 0.4); /* text-white/40 */
+}
+
+.capture-btn.fade:hover {
+  background: rgba(255, 255, 255, 0.05); /* hover:bg-white/[0.05] */
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .main-buttons {
+    padding: 0.75rem;
+  }
+
+  .main-btn {
+    width: 70px;
+    height: 70px;
+  }
+
+  .main-btn-center {
+    width: 85px;
+    height: 85px;
+  }
+
+  .btn-label {
+    font-size: 0.6rem;
+  }
+
+  .settings-btn {
+    width: 40px;
+    height: 40px;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .capture-modal {
+    padding: 2rem 1.5rem;
+  }
+
+  .capture-title {
+    font-size: 1.5rem;
+  }
+
+  .capture-buttons {
+    flex-direction: column;
+  }
+
+  .capture-btn {
+    width: 100%;
+  }
+}
+

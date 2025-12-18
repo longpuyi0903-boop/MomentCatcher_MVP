@@ -1,0 +1,297 @@
+/* ============================================
+   Background Carousel - 3D 传送带背景选择器
+   修复版本：确保当前选中图片始终正面居中
+   ============================================ */
+
+.background-carousel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent; /* 透明背景，让StarBackground显示 */
+  z-index: 9999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 标题区域 - 1:1 复刻参考代码样式 */
+.carousel-title {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10001;
+  margin-bottom: 3rem; /* mb-12 */
+}
+
+.carousel-title-subtitle {
+  font-family: 'Tenor Sans', serif; /* dreamy-font */
+  font-size: 0.75rem; /* text-xs */
+  letter-spacing: 0.8em; /* tracking-[0.8em] */
+  color: rgba(255, 255, 255, 0.4); /* text-white/40 */
+  text-transform: uppercase;
+  margin-bottom: 0.5rem; /* mb-2 */
+  font-weight: 400;
+}
+
+.carousel-title-main {
+  font-family: 'Tenor Sans', serif; /* dreamy-font */
+  font-size: 1.5rem; /* text-2xl */
+  letter-spacing: 0.4em; /* tracking-[0.4em] */
+  color: rgba(255, 255, 255, 0.8); /* text-white/80 */
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 12px rgba(255, 255, 255, 0.15),
+    0 0 25px rgba(130, 160, 255, 0.05); /* glow-text-dreamy */
+  font-weight: 400;
+}
+
+/* 3D场景容器 - 1:1 复刻参考代码 */
+.background-carousel-container {
+  position: relative;
+  width: 100%;
+  max-width: 64rem; /* max-w-4xl */
+  height: 450px; /* h-[450px] */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px; /* perspective-[1200px] */
+  perspective-origin: center center;
+}
+
+.background-carousel-scene {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 单个图片项 - 1:1 复刻参考代码（aspect-video 16:9比例） */
+.background-carousel-item {
+  position: absolute;
+  width: 300px; /* w-[300px] */
+  aspect-ratio: 16 / 9; /* aspect-video */
+  transform-style: preserve-3d;
+  pointer-events: auto;
+  will-change: transform, opacity;
+}
+
+@media (min-width: 768px) {
+  .background-carousel-item {
+    width: 450px; /* md:w-[450px] */
+  }
+}
+
+/* 图片样式 - 1:1 复刻参考代码 */
+.background-carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: auto;
+  -webkit-user-drag: none;
+  /* 默认状态：灰度 + 60%透明度 */
+  filter: grayscale(100%);
+  opacity: 0.6;
+  transition: all 1s ease; /* duration-1000 */
+}
+
+/* hover状态：彩色 + 100%透明度 - 1:1 复刻参考代码 */
+.group:hover .background-carousel-image {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+/* 渐变遮罩 - 1:1 复刻参考代码 */
+.carousel-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent, transparent);
+  opacity: 0.8;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+/* 中心图片信息覆盖层 - 1:1 复刻参考代码 */
+.carousel-item-info {
+  position: absolute;
+  bottom: 1.5rem; /* bottom-6 */
+  left: 2rem; /* left-8 */
+  transition: all 0.7s ease; /* duration-700 */
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.carousel-item-id {
+  font-family: 'Courier Prime', monospace; /* mono-font */
+  font-size: 0.5rem; /* text-[8px] */
+  letter-spacing: 0.4em; /* tracking-[0.4em] */
+  color: rgba(255, 255, 255, 0.4); /* text-white/40 */
+  margin-bottom: 0.25rem; /* mb-1 */
+}
+
+.carousel-item-name {
+  font-family: 'Tenor Sans', serif; /* dreamy-font */
+  font-size: 1.25rem; /* text-xl */
+  letter-spacing: 0.3em; /* tracking-[0.3em] */
+  color: rgba(255, 255, 255, 0.9); /* text-white/90 */
+}
+
+/* 边框样式已移到内层div，这里移除重复定义 */
+
+/* 导航箭头 - 1:1 复刻参考代码（简洁样式，无背景无边框，相对于container定位） */
+.carousel-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 1rem; /* p-4 */
+  color: rgba(255, 255, 255, 0.2); /* text-white/20 */
+  cursor: pointer;
+  z-index: 30; /* z-30 */
+  transition: color 0.3s ease; /* transition-colors */
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-nav-arrow svg {
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
+}
+
+.carousel-nav-arrow:hover {
+  color: rgba(255, 255, 255, 0.6); /* hover:text-white/60 */
+}
+
+.carousel-nav-left {
+  left: 1rem; /* left-4 - 相对于container */
+}
+
+.carousel-nav-right {
+  right: 1rem; /* right-4 - 相对于container */
+}
+
+/* 底部指示器 - 1:1 复刻参考代码样式 */
+.carousel-indicators {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.75rem; /* space-x-3 */
+  z-index: 10001;
+  margin-top: 3rem; /* mt-12 */
+}
+
+.carousel-indicator {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1); /* bg-white/10 */
+  cursor: pointer;
+  transition: all 0.7s ease; /* duration-700 */
+  border-radius: 0;
+}
+
+.carousel-indicator:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.carousel-indicator.active {
+  width: 2rem; /* w-8 */
+  background: rgba(255, 255, 255, 0.6); /* bg-white/60 */
+}
+
+.carousel-indicator:not(.active) {
+  width: 0.5rem; /* w-2 */
+}
+
+/* 底部提示文字 - 1:1 复刻参考代码 */
+.carousel-hint {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Courier Prime', monospace; /* mono-font */
+  font-size: 0.4375rem; /* text-[7px] */
+  letter-spacing: 0.5em; /* tracking-[0.5em] */
+  color: rgba(255, 255, 255, 0.2); /* text-white/20 */
+  text-transform: uppercase;
+  animation: pulse 2s ease-in-out infinite;
+  z-index: 10001;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  .carousel-title h1 {
+    font-size: 1.2rem;
+    letter-spacing: 0.2em;
+  }
+  
+  .carousel-title p {
+    font-size: 0.75rem;
+  }
+  
+  .background-carousel-item {
+    width: 70vw;
+    max-width: 350px;
+    height: 50vh;
+    max-height: 280px;
+  }
+  
+  .carousel-nav-arrow {
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
+  }
+  
+  .carousel-nav-left {
+    left: 3%;
+  }
+  
+  .carousel-nav-right {
+    right: 3%;
+  }
+  
+  .carousel-indicators {
+    bottom: 5%;
+    gap: 8px;
+  }
+  
+  .carousel-indicator {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* 小屏幕优化 */
+@media (max-width: 480px) {
+  .carousel-title {
+    top: 5%;
+  }
+  
+  .carousel-title h1 {
+    font-size: 1rem;
+  }
+  
+  .background-carousel-item {
+    width: 80vw;
+    height: 45vh;
+  }
+  
+  .carousel-nav-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+  }
+}

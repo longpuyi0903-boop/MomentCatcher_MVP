@@ -1,0 +1,22 @@
+# /requirements.txt
+
+# UI 框架
+gradio>=4.0.0
+
+# Streamlit 框架
+# streamlit>=1.28.0
+
+# 环境变量管理
+python-dotenv>=1.0.0
+
+# 日期处理
+python-dateutil>=2.8.0
+
+# 核心依赖：阿里云 DashScope (包含 Qwen LLM 和 新版 TTS)
+dashscope>=1.14.0
+
+# FastAPI 后端
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+

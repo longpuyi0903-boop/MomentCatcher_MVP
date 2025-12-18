@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# 前端构建产物
+frontend/dist/
+frontend/build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 日志
+*.log
+logs/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Windows系统文件（避免添加Chrome缓存等）
+AppData/
+*.lnk
+
+# 测试和临时文件
+*.tmp
+*.temp
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 存储数据（如果需要保密，不要提交）
+# storage/
+# 注意：如果storage文件夹包含用户数据，建议不提交或使用.gitkeep
+
+# 音频输出
+audio_outputs/
+*.mp3
+*.wav
+*.m4a
+
+# 压缩包
+*.zip
+*.rar
+
+# 文档（可选，如果不想提交）
+# *.md
+# !README.md
+

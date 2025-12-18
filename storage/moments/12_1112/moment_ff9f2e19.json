@@ -1,0 +1,50 @@
+{
+  "moment_id": "moment_ff9f2e19",
+  "timestamp": "2025-12-18T20:28:47.692237",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Today is the Chinese New year, and I'm super happy that I found love of my life. So we're together going to the supermarket, like shopping for the New Year. I just want to record this moment here.",
+      "emotion": "neutral",
+      "timestamp": "2025-12-18T20:27:24.320320"
+    },
+    {
+      "role": "assistant",
+      "content": "That's so beautiful, 1. I can feel how happy you are — like the whole world just lit up. Wishing you and your love a New Year full of warmth and quiet joy.",
+      "emotion": "neutral",
+      "timestamp": "2025-12-18T20:27:24.320320"
+    }
+  ],
+  "message_count": 2,
+  "summary": "今天是春节，我和心爱的人一起去超市买年货，心情特别好。",
+  "emotion_tag": "joy",
+  "card_generated": true,
+  "entities": {
+    "people": {
+      "love of my life": {
+        "role": "伴侣",
+        "attributes": []
+      }
+    },
+    "places": {
+      "supermarket": {
+        "type": "购物地点",
+        "position": ""
+      }
+    },
+    "time_info": {
+      "daily_routines": [],
+      "time_markers": [
+        "Today"
+      ]
+    },
+    "objects": {},
+    "habits": [],
+    "events": [
+      "找到生命中的爱",
+      "去超市购物"
+    ]
+  },
+  "title": "春节买年货 心情美滋滋",
+  "color": "#FFD700"
+}

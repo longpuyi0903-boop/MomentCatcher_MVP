@@ -1,0 +1,37 @@
+{
+  "moment_id": "moment_42a56b5f",
+  "timestamp": "2025-12-18T19:27:10.674347",
+  "messages": [
+    {
+      "role": "user",
+      "content": "晚上好晚上好。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-18T19:26:55.291062"
+    },
+    {
+      "role": "assistant",
+      "content": "晚上好呀～刚在窗边发了会儿呆，听见你消息就回来了。今天过得怎么样？",
+      "emotion": "neutral",
+      "timestamp": "2025-12-18T19:26:55.291062"
+    }
+  ],
+  "message_count": 2,
+  "summary": "晚上好，简单的问候让我感到一丝平静。",
+  "emotion_tag": "neutral",
+  "card_generated": true,
+  "entities": {
+    "people": {},
+    "places": {},
+    "time_info": {
+      "daily_routines": [],
+      "time_markers": [
+        "晚上"
+      ]
+    },
+    "objects": {},
+    "habits": [],
+    "events": []
+  },
+  "title": "简单的问候带来平静",
+  "color": "#D3D3D3"
+}

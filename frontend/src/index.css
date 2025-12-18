@@ -1,0 +1,99 @@
+/* ============================================
+   Phase 1: P0 - 字体系统和颜色系统
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Pacifico&family=Indie+Flower&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* 颜色系统 */
+  --bg-black: #000000;
+  --bg-panel: #1a1a1a;
+  --bg-panel-light: #2a2a2a;
+  --text-white: #FFFFFF;
+  --text-gray: #D3D3D3;
+  --text-gray-light: #e0e0e0;
+  
+  /* 情绪颜色映射 */
+  --emotion-joy: #FFD700;
+  --emotion-sadness: #9370DB;
+  --emotion-anger: #FF6347;
+  --emotion-fear: #4682B4;
+  --emotion-love: #FF69B4;
+  --emotion-surprise: #FFA500;
+  --emotion-neutral: #D3D3D3;
+  
+  /* 发光效果 */
+  --glow-purple: #9370DB;
+  --glow-blue: #667eea;
+  
+  /* 渐变颜色 */
+  --gradient-companion: linear-gradient(135deg, #9370DB 0%, #FF69B4 100%);
+  --gradient-traveler: linear-gradient(135deg, #4682B4 0%, #9370DB 100%);
+}
+
+/* 页面级约束：固定高度单屏，禁止纵向滚动 */
+html, body {
+  height: 100%;
+  height: 100dvh; /* 动态视口高度，适配移动端浏览器UI */
+  overflow-y: hidden; /* 硬性规则：页面禁止滚动 */
+  overflow-x: hidden;
+  /* 移动端全屏优化 */
+  -webkit-overflow-scrolling: touch;
+  position: fixed;
+  width: 100%;
+}
+
+body {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-black);
+  color: var(--text-white);
+  min-height: 100vh;
+  min-height: 100dvh; /* 动态视口高度 */
+  overflow-x: hidden;
+  /* 移动端优化 */
+  -webkit-tap-highlight-color: transparent; /* 移除点击高亮 */
+  touch-action: manipulation; /* 防止双击缩放，提升触摸响应 */
+}
+
+/* 移动端安全区域适配（iPhone X+） */
+#root {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* 科幻字体（用于标题、按钮、标签） */
+.font-sci-fi {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* 手写字体（用于名字、情绪、Moment Card） */
+.font-handwriting {
+  font-family: 'Caveat', 'Pacifico', 'Indie Flower', cursive;
+  font-weight: 500;
+}
+
+.font-handwriting-bold {
+  font-family: 'Caveat', 'Pacifico', 'Indie Flower', cursive;
+  font-weight: 700;
+}
+
+code {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+}
+

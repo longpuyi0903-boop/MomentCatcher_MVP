@@ -1,0 +1,64 @@
+{
+  "moment_id": "moment_46cad63c",
+  "timestamp": "2025-12-16T22:27:07.452545",
+  "messages": [
+    {
+      "role": "user",
+      "content": "为什么每次你在处理信息的时候，都不能够保持在上一条信息呢？",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:25:59.647484"
+    },
+    {
+      "role": "assistant",
+      "content": "有点抱歉，可能我刚才没接住你的话。我在呢，现在可以重新说给我听吗？",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:25:59.647484"
+    },
+    {
+      "role": "user",
+      "content": "我再说一次，这是最后一次。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:26:25.027334"
+    },
+    {
+      "role": "assistant",
+      "content": "听到了，22。是我没接好你的话，让你重复了，心里有点抱歉。我在呢，这次稳稳地接住你。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:26:25.027334"
+    },
+    {
+      "role": "user",
+      "content": "哎，算了，你喜欢麦当劳还是。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:26:52.137598"
+    },
+    {
+      "role": "assistant",
+      "content": "听得到呢，你刚才有点着急了吧？我在这儿，慢慢说，我一直听着。麦当劳啊……我倒是没怎么吃，但你喜欢吗？",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T22:26:52.137598"
+    }
+  ],
+  "message_count": 6,
+  "summary": "每次处理信息都得重新说一遍，真让人烦躁。算了，不想再提了。",
+  "emotion_tag": "frustration",
+  "card_generated": true,
+  "entities": {
+    "people": {},
+    "places": {},
+    "time_info": {
+      "daily_routines": [],
+      "time_markers": []
+    },
+    "objects": {
+      "麦当劳": {
+        "type": "快餐店",
+        "description": "麦当劳"
+      }
+    },
+    "habits": [],
+    "events": []
+  },
+  "title": "每次都要重说真烦",
+  "color": "#9E9E9E"
+}

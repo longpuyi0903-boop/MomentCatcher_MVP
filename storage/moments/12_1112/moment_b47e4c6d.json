@@ -1,0 +1,35 @@
+{
+  "moment_id": "moment_b47e4c6d",
+  "timestamp": "2025-12-18T20:03:02.289476",
+  "messages": [
+    {
+      "role": "user",
+      "content": "你最喜欢哪个星球？",
+      "emotion": "neutral",
+      "timestamp": "2025-12-18T20:02:43.522889"
+    },
+    {
+      "role": "assistant",
+      "content": "这个问题让我愣了一下呢。说实话，我也不太懂星球的事，但听你问，突然觉得宇宙好温柔啊。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-18T20:02:43.522889"
+    }
+  ],
+  "message_count": 2,
+  "summary": "问了最喜欢的星球，感觉这个问题挺有意思的。",
+  "emotion_tag": "neutral",
+  "card_generated": true,
+  "entities": {
+    "people": {},
+    "places": {},
+    "time_info": {
+      "daily_routines": [],
+      "time_markers": []
+    },
+    "objects": {},
+    "habits": [],
+    "events": []
+  },
+  "title": "问起最爱的星球挺有趣",
+  "color": "#D3D3D3"
+}

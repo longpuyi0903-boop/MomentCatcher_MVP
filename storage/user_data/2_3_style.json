@@ -1,0 +1,30 @@
+{
+  "vocabulary": {
+    "We": 2,
+    "wish": 2,
+    "you": 2,
+    "Merry": 2,
+    "Christmas": 2,
+    "and": 1,
+    "Happy": 1,
+    "New": 1,
+    "Year": 1
+  },
+  "sentence_lengths": [
+    80
+  ],
+  "english_ratio": 0.7875,
+  "emoji_usage": {},
+  "common_phrases": {
+    "We wish": 2,
+    "wish you": 2,
+    "you Merry": 2,
+    "Merry Christmas": 2,
+    "Christmas We": 1,
+    "Christmas and": 1,
+    "and Happy": 1,
+    "Happy New": 1,
+    "New Year": 1
+  },
+  "total_messages": 1
+}

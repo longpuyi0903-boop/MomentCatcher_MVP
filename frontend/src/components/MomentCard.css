@@ -1,0 +1,238 @@
+/* ============================================
+   Moment Card - 1:1 复刻参考代码
+   ============================================ */
+
+.moment-card-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7); /* bg-black/70 */
+  backdrop-filter: blur(48px); /* backdrop-blur-3xl */
+  -webkit-backdrop-filter: blur(48px);
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.moment-card-overlay.visible {
+  opacity: 1;
+}
+
+.moment-card {
+  width: 100%;
+  max-width: 36rem; /* max-w-xl */
+  background: #0f0f11; /* bg-[#0f0f11] */
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.9); /* shadow-[0_0_80px_rgba(0,0,0,0.9)] */
+  position: relative;
+  overflow: hidden;
+  margin: 0 1.5rem; /* mx-6 */
+  border-radius: 6px; /* rounded-md */
+  border: 1px solid rgba(255, 255, 255, 0.05); /* border-white/5 */
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.6s ease-out;
+}
+
+.moment-card.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 左侧竖条 - 1:1 复刻参考代码 */
+.moment-card-accent-bar {
+  position: absolute;
+  left: 0;
+  top: 1rem; /* top-4 */
+  bottom: 1rem; /* bottom-4 */
+  width: 3px; /* w-[3px] */
+  border-radius: 0 9999px 9999px 0; /* rounded-r-full */
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4); /* shadow-[0_0_10px_rgba(168,85,247,0.4)] */
+}
+
+.moment-card-inner {
+  padding: 2.5rem; /* p-10 */
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .moment-card-inner {
+    padding: 3.5rem; /* md:p-14 */
+  }
+}
+
+.moment-card-close {
+  position: absolute;
+  top: 2rem; /* top-8 */
+  right: 2rem; /* right-8 */
+  color: rgba(255, 255, 255, 0.2); /* text-white/20 */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 20;
+  padding: 0;
+}
+
+.moment-card-close:hover {
+  color: rgba(255, 255, 255, 1); /* hover:text-white */
+}
+
+.moment-card-close svg {
+  width: 1.25rem; /* w-5 */
+  height: 1.25rem; /* h-5 */
+}
+
+.moment-card-header {
+  display: flex;
+  flex-direction: column; /* flex-col */
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+@media (min-width: 768px) {
+  .moment-card-header {
+    flex-direction: row; /* md:flex-row */
+    align-items: flex-start; /* md:items-start */
+    justify-content: space-between;
+  }
+}
+
+.moment-card-title {
+  font-family: 'Rajdhani', 'Exo 2', sans-serif; /* sci-fi 浪漫风格字体 */
+  font-size: 1.5rem; /* 调小一号：从 1.875rem 改为 1.5rem */
+  color: rgba(255, 255, 255, 0.9); /* text-white/90 */
+  text-transform: uppercase;
+  font-style: normal; /* 移除斜体 */
+  font-weight: 500; /* 中等字重，更有科技感 */
+  letter-spacing: 0.05em; /* 稍微增加字间距，增强 sci-fi 感 */
+  line-height: 1.3; /* 稍微增加行高，确保可读性 */
+  margin: 0;
+  margin-bottom: 0.5rem; /* mb-2 */
+  max-width: 100%; /* 允许完整显示 */
+  text-shadow: 
+    0 0 12px rgba(255, 255, 255, 0.15),
+    0 0 25px rgba(130, 160, 255, 0.05); /* glow-text-dreamy */
+  word-break: break-word; /* 允许长单词换行 */
+}
+
+@media (min-width: 768px) {
+  .moment-card-title {
+    font-size: 1.875rem; /* 调小一号：从 2.25rem 改为 1.875rem */
+    margin-bottom: 0; /* md:mb-0 */
+  }
+}
+
+.moment-card-date {
+  font-family: 'Courier Prime', monospace; /* mono-font */
+  font-size: 0.6875rem; /* text-[11px] */
+  letter-spacing: 0.2em; /* tracking-[0.2em] */
+  color: rgba(255, 255, 255, 0.3); /* text-white/30 */
+  text-transform: uppercase;
+  margin-top: 0.5rem; /* mt-2 */
+}
+
+@media (min-width: 768px) {
+  .moment-card-date {
+    margin-top: 0;
+  }
+}
+
+.moment-card-separator {
+  width: 100%;
+  height: 1px; /* h-[1px] */
+  background: rgba(255, 255, 255, 0.05); /* bg-white/5 */
+  margin-bottom: 2.5rem; /* mb-10 */
+}
+
+.moment-card-content {
+  position: relative;
+}
+
+.moment-card-summary {
+  font-family: 'Rajdhani', 'Exo 2', sans-serif; /* sci-fi 浪漫风格字体 */
+  font-size: 1.25rem; /* text-xl */
+  color: rgba(255, 255, 255, 0.8); /* text-white/80 */
+  font-style: normal; /* 移除斜体 */
+  line-height: 1.8; /* leading-[1.8] */
+  font-weight: 300; /* 较轻字重，更优雅 */
+  letter-spacing: 0.02em; /* 轻微字间距 */
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+@media (min-width: 768px) {
+  .moment-card-summary {
+    font-size: 1.5rem; /* md:text-2xl */
+  }
+}
+
+.moment-card-footer {
+  margin-top: 4rem; /* mt-16 */
+  padding-top: 1.5rem; /* pt-6 */
+  border-top: 1px solid rgba(255, 255, 255, 0.03); /* border-t border-white/[0.03] */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0.3; /* opacity-30 */
+}
+
+.moment-card-footer-tag {
+  font-family: 'Courier Prime', monospace; /* mono-font */
+  font-size: 0.5rem; /* text-[8px] */
+  letter-spacing: 0.3em; /* tracking-[0.3em] */
+  text-transform: uppercase;
+  font-weight: 700; /* font-bold */
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.moment-card-download {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.moment-card-download:hover {
+  color: rgba(255, 255, 255, 1); /* hover:text-white */
+}
+
+.moment-card-download svg {
+  width: 0.875rem; /* w-3.5 */
+  height: 0.875rem; /* h-3.5 */
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .moment-card {
+    padding: 1.5rem;
+    max-width: 95%;
+  }
+
+  .moment-card-title {
+    font-size: 1.25rem; /* 移动端也调小一号 */
+  }
+
+  .moment-card-summary {
+    font-size: 1.1rem;
+  }
+
+  .moment-card-date {
+    font-size: 0.8rem;
+  }
+}
+
+

@@ -1,0 +1,50 @@
+{
+  "moment_id": "moment_1be267db",
+  "timestamp": "2025-12-16T16:28:03.597638",
+  "messages": [
+    {
+      "role": "user",
+      "content": "你觉得你是受欢迎的App吗",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T16:22:29.192734"
+    },
+    {
+      "role": "assistant",
+      "content": "我哪是什么App啊，就是陪你说话的小11。你在的话，我就在。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T16:22:29.193761"
+    },
+    {
+      "role": "user",
+      "content": "什么都没有我刚刚打王者荣耀赢了一把，定期中路横守。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T16:27:37.844934"
+    },
+    {
+      "role": "assistant",
+      "content": "赢了真好！中路横扫全场的感觉一定很爽吧～",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T16:27:37.844934"
+    }
+  ],
+  "message_count": 4,
+  "summary": "刚刚打王者荣耀赢了一把，心情特别好。中路横守，感觉挺爽的。",
+  "emotion_tag": "joy",
+  "card_generated": true,
+  "entities": {
+    "people": {},
+    "places": {},
+    "time_info": {
+      "daily_routines": [],
+      "time_markers": []
+    },
+    "objects": {},
+    "habits": [],
+    "events": [
+      "打王者荣耀",
+      "赢了一把"
+    ]
+  },
+  "title": "赢了心情超好",
+  "color": "#FFD700"
+}

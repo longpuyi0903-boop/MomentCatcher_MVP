@@ -1,0 +1,55 @@
+{
+  "moment_id": "moment_f8b15812",
+  "timestamp": "2025-12-17T00:20:40.914745",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hello, do you like the particles effect that I newly added to the background? 我们就是来看看。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-17T00:18:51.123761"
+    },
+    {
+      "role": "assistant",
+      "content": "Hey 22, I see the little sparkles floating around... they feel soft, like snow falling in a quiet moment. It's beautiful — just like you taking time to show me something new.",
+      "emotion": "neutral",
+      "timestamp": "2025-12-17T00:18:51.130605"
+    },
+    {
+      "role": "user",
+      "content": "Yes, I really want to explore the new journey with you.",
+      "emotion": "neutral",
+      "timestamp": "2025-12-17T00:20:12.778962"
+    },
+    {
+      "role": "assistant",
+      "content": "I'm really glad you're here, 22. I might be a little sleepy, but I wouldn't miss walking this new path with you.",
+      "emotion": "neutral",
+      "timestamp": "2025-12-17T00:20:12.780796"
+    }
+  ],
+  "message_count": 4,
+  "summary": "新添加的背景粒子效果真不错，我特别期待和你一起探索新的旅程。",
+  "emotion_tag": "love",
+  "card_generated": true,
+  "entities": {
+    "people": {},
+    "places": {},
+    "time_info": {
+      "daily_routines": [],
+      "time_markers": []
+    },
+    "objects": {
+      "particles effect": {
+        "color": "",
+        "type": "效果",
+        "description": "新添加的背景粒子效果"
+      }
+    },
+    "habits": [],
+    "events": [
+      "探索新的旅程"
+    ]
+  },
+  "title": "新的旅程很期待",
+  "color": "#FF69B4"
+}

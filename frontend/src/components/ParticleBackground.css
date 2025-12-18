@@ -1,0 +1,52 @@
+/* ============================================
+   Particle Background - 粒子背景容器
+   1:1 复刻参考代码样式
+   确保背景图在固定区域内显示，不管原图大小
+   ============================================ */
+
+.particle-background-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vh;
+  max-width: 80vh;
+  height: 80vh;
+  max-height: 80vh;
+  aspect-ratio: 1;
+  opacity: 0.8;
+  z-index: 1; /* 在StarBackground之上 */
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* 确保内容不超出固定区域 */
+}
+
+.particle-background-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* 确保内容适应容器，保持比例 */
+}
+
+/* 移动端适配 - 确保在小屏幕上也能正确显示 */
+@media (max-width: 768px) {
+  .particle-background-container {
+    width: 70vh;
+    max-width: 70vh;
+    height: 70vh;
+    max-height: 70vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .particle-background-container {
+    width: 60vh;
+    max-width: 60vh;
+    height: 60vh;
+    max-height: 60vh;
+  }
+}

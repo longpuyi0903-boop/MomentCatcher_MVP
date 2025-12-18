@@ -1,0 +1,196 @@
+/* ============================================
+   背景选择页面 - 3D传送带效果
+   ============================================ */
+
+.background-selector-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 10000; /* 顶层 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.background-selector-title {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10001;
+  color: #fff;
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+}
+
+.background-selector-title h1 {
+  font-size: 2rem;
+  letter-spacing: 0.3em;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  font-weight: 400;
+  text-shadow: 
+    0 0 5px rgba(255, 255, 255, 0.5),
+    0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+.background-selector-title p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.1em;
+}
+
+/* 3D传送带容器 */
+.background-carousel-container {
+  position: relative;
+  width: 100%;
+  height: 70%;
+  perspective: 2000px;
+  perspective-origin: center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.background-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease-out;
+}
+
+/* 单个背景图片项 */
+.background-carousel-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60vw;
+  height: 80vh;
+  margin-left: -30vw;
+  margin-top: -40vh;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.background-carousel-item.active {
+  border: 2px solid rgba(102, 126, 234, 0.8);
+  box-shadow: 
+    0 0 20px rgba(102, 126, 234, 0.5),
+    0 0 40px rgba(102, 126, 234, 0.3);
+}
+
+/* 下沉动画 */
+.background-selector-page.sinking {
+  animation: sinkDown 0.8s ease-in-out forwards;
+}
+
+.background-selector-page.sinking .background-carousel-item {
+  transition: all 0.8s ease-in-out;
+}
+
+.background-selector-page.sinking .background-carousel-item.active {
+  /* 确保选中的图片在下沉时保持1:1的位置和比例 */
+  transform: translateX(0) translateZ(0) rotateY(0deg) scale(1) !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+@keyframes sinkDown {
+  0% {
+    z-index: 10000;
+    transform: translateZ(0);
+  }
+  100% {
+    z-index: -1; /* 下沉到最底层 */
+    transform: translateZ(0);
+  }
+}
+
+/* 左右箭头按钮 */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10002;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.carousel-arrow:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(102, 126, 234, 0.8);
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+.carousel-arrow-left {
+  left: 2rem;
+}
+
+.carousel-arrow-right {
+  right: 2rem;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .background-selector-title h1 {
+    font-size: 1.5rem;
+  }
+  
+  .background-selector-title p {
+    font-size: 0.8rem;
+  }
+  
+  .background-carousel-item {
+    width: 80vw;
+    height: 60vh;
+    margin-left: -40vw;
+    margin-top: -30vh;
+  }
+  
+  .carousel-arrow {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  
+  .carousel-arrow-left {
+    left: 1rem;
+  }
+  
+  .carousel-arrow-right {
+    right: 1rem;
+  }
+}

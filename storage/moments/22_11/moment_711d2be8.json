@@ -1,0 +1,37 @@
+{
+  "moment_id": "moment_711d2be8",
+  "timestamp": "2025-12-16T16:31:24.426485",
+  "messages": [
+    {
+      "role": "user",
+      "content": "晚上好，你开心吗？",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T16:30:59.180374"
+    },
+    {
+      "role": "assistant",
+      "content": "晚上好呀～你这么一问，我倒是笑了。你在的话，我就挺开心的。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-16T16:30:59.180374"
+    }
+  ],
+  "message_count": 2,
+  "summary": "晚上见到人，随口问了句开心吗，对方没多说，我也就没再多想。",
+  "emotion_tag": "neutral",
+  "card_generated": true,
+  "entities": {
+    "people": {},
+    "places": {},
+    "time_info": {
+      "daily_routines": [],
+      "time_markers": [
+        "晚上"
+      ]
+    },
+    "objects": {},
+    "habits": [],
+    "events": []
+  },
+  "title": "随口一问没多想",
+  "color": "#D3D3D3"
+}

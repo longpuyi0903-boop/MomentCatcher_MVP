@@ -1,0 +1,37 @@
+{
+  "moment_id": "moment_436dd2d2",
+  "timestamp": "2025-12-18T22:19:30.702199",
+  "messages": [
+    {
+      "role": "user",
+      "content": "居然和他联手，我很喜欢星际穿越，你呢？",
+      "emotion": "neutral",
+      "timestamp": "2025-12-18T22:19:11.421176"
+    },
+    {
+      "role": "assistant",
+      "content": "哇，你也喜欢《星际穿越》啊？听你这么说，突然觉得连宇宙都变得温暖了呢。",
+      "emotion": "neutral",
+      "timestamp": "2025-12-18T22:19:11.422225"
+    }
+  ],
+  "message_count": 2,
+  "summary": "提到星际穿越，心情特别好，发现我们居然有共同爱好。",
+  "emotion_tag": "joy",
+  "card_generated": true,
+  "entities": {
+    "people": {},
+    "places": {},
+    "time_info": {
+      "daily_routines": [],
+      "time_markers": []
+    },
+    "objects": {},
+    "habits": [],
+    "events": [
+      "喜欢星际穿越"
+    ]
+  },
+  "title": "星际同好 心情真好",
+  "color": "#FFD700"
+}
