@@ -35,8 +35,20 @@
 - **Build Command**: 留空（Render 会自动检测）
 - **Start Command**: `python run_api.py`
 
-### 1.4 环境变量（可选）
-如果后端需要环境变量，在 "Environment Variables" 部分添加。
+### 1.4 环境变量（**必需**）
+⚠️ **重要**：后端需要设置环境变量才能运行！
+
+在 "Environment Variables" 部分添加：
+
+**必需变量：**
+- **Key**: `ALIYUN_QWEN_KEY`
+- **Value**: 你的阿里云通义千问 API 密钥
+
+**可选变量：**
+- **Key**: `ALIYUN_DASHSCOPE_API_KEY`
+- **Value**: 阿里云 DashScope API 密钥（用于 TTS）
+
+> 📌 **提示**：详细说明请参考 `RENDER_BACKEND_ENV_SETUP.md`
 
 ### 1.5 创建并等待部署
 1. 点击 **"Create Web Service"**
