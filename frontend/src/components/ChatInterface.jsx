@@ -257,19 +257,19 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
           } else {
             // 如果没有背景，说明是新会话，重置状态
             console.log('🆕 [ChatInterface] 检测到新登录用户（会话内切换但无背景），重置 sessionChoiceMade')
-            
-            // 更新 Store 中的当前会话用户
-            setSessionUserId(userInfo.user_id)
-            
-            // 重置选择状态
-            setSessionChoiceMade(false)
-            
-            // 重置 UI 状态
-            setMessages([])
-            hasInitializedRef.current = false
-            isAppReadyRef.current = false
-            setIsAppReady(false)
-            setUiVisible(false)
+        
+        // 更新 Store 中的当前会话用户
+        setSessionUserId(userInfo.user_id)
+        
+        // 重置选择状态
+        setSessionChoiceMade(false)
+        
+        // 重置 UI 状态
+        setMessages([])
+        hasInitializedRef.current = false
+        isAppReadyRef.current = false
+        setIsAppReady(false)
+        setUiVisible(false)
           }
         }
       } else {
@@ -1028,7 +1028,7 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
           if (chatResult.audio_path) {
             const basePath = chatResult.audio_path.startsWith('http') 
               ? chatResult.audio_path 
-              : `http://localhost:8000${chatResult.audio_path}`
+              : `${getAudioBaseURL()}${chatResult.audio_path}`
             const audioPath = `${basePath}?t=${Date.now()}`
             setAudioUrl(null)
             setTimeout(() => {

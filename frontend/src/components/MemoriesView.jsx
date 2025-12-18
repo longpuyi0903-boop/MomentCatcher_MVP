@@ -136,7 +136,7 @@ function MemoriesView({ userInfo, onClose }) {
         const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0
         return timeB - timeA // 降序：最新的在前
       })
-
+        
       // 预计算所有点的 3D 位置
       const points = sortedMoments.map((m, i) => ({
         ...m,
@@ -144,7 +144,7 @@ function MemoriesView({ userInfo, onClose }) {
       }))
 
       // 1. 绘制连线 (增强星图感)
-      ctx.beginPath()
+          ctx.beginPath()
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'
       ctx.lineWidth = 1
       for (let i = 0; i < points.length - 1; i++) {
@@ -199,8 +199,8 @@ function MemoriesView({ userInfo, onClose }) {
       const mouseY = e.clientY - rect.top
       
       // 计算缩放比例
-      const scaleX = canvas.width / rect.width
-      const scaleY = canvas.height / rect.height
+        const scaleX = canvas.width / rect.width
+        const scaleY = canvas.height / rect.height
       const clickX = mouseX * scaleX
       const clickY = mouseY * scaleY
       

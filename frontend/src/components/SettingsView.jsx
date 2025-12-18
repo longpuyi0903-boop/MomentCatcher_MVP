@@ -98,22 +98,22 @@ function SettingsView({ userInfo, onClose, onReset, showOverlay = true }) {
   const content = (
     <div className="settings-view" onClick={(e) => showOverlay && e.stopPropagation()}>
       <div className="settings-inner">
-          {/* 右上角关闭按钮 */}
-          <button 
-            className="settings-close-btn"
-            onClick={onClose}
-            aria-label="Close"
-          >
+      {/* 右上角关闭按钮 */}
+      <button 
+        className="settings-close-btn"
+        onClick={onClose}
+        aria-label="Close"
+      >
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
 
           <div className="text-center mb-16">
             <h3 className="settings-title">SYSTEM CONFIGURATION</h3>
           </div>
 
-          <div className="settings-content">
+      <div className="settings-content">
             {/* TRAVELER 配置 - 直接可编辑 */}
             <div className="config-item">
               <label className="config-label">TRAVELER</label>
@@ -131,41 +131,41 @@ function SettingsView({ userInfo, onClose, onReset, showOverlay = true }) {
               </div>
             </div>
 
-            {/* COMPANION 配置 - 直接可编辑 */}
-            <div className="config-item">
+        {/* COMPANION 配置 - 直接可编辑 */}
+        <div className="config-item">
               <label className="config-label">COMPANION</label>
               <div className="settings-input-wrapper">
-                <input
-                  type="text"
-                  value={agentName}
-                  onChange={(e) => setAgentName(e.target.value)}
-                  className="settings-input companion-input"
+          <input
+            type="text"
+            value={agentName}
+            onChange={(e) => setAgentName(e.target.value)}
+            className="settings-input companion-input"
                   placeholder="N/A"
-                  disabled={isSaving}
-                  onFocus={() => setIsEditing(true)}
-                />
+            disabled={isSaving}
+            onFocus={() => setIsEditing(true)}
+          />
                 <div className="settings-input-underline"></div>
               </div>
-            </div>
-          </div>
+        </div>
+        </div>
 
-          {/* 按钮 - RESET CORE 和 COMMIT */}
-          <div className="settings-buttons">
-            <button 
-              className="settings-reset-core-btn"
-              onClick={handleResetCore}
-              disabled={isSaving}
-            >
+        {/* 按钮 - RESET CORE 和 COMMIT */}
+        <div className="settings-buttons">
+          <button 
+            className="settings-reset-core-btn"
+            onClick={handleResetCore}
+            disabled={isSaving}
+          >
               Reset Core
-            </button>
-            <button 
-              className="settings-commit-btn"
-              onClick={handleCommit}
-              disabled={isSaving || !isEditing || (!userName.trim() || !agentName.trim())}
-            >
+          </button>
+          <button 
+            className="settings-commit-btn"
+            onClick={handleCommit}
+            disabled={isSaving || !isEditing || (!userName.trim() || !agentName.trim())}
+          >
               {isSaving ? 'SAVING...' : 'Commit'}
-            </button>
-          </div>
+          </button>
+        </div>
 
           {/* 错误和成功消息 */}
           {(error || success) && (

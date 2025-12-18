@@ -168,29 +168,29 @@ function MainInterface({ userInfo, onUserInfoUpdate }) {
 
       {/* 设置弹窗 */}
       {showSettings && (
-        <SettingsView 
-          userInfo={userInfo} 
-          onClose={() => {
-            setShowSettings(false)
-            // 确保回到主页面视图
-            setCurrentView('chat')
-          }}
-          onReset={(updatedUserInfo) => {
-            // 名字更新后的回调
-            if (updatedUserInfo && onUserInfoUpdate) {
-              onUserInfoUpdate(updatedUserInfo)
-            } else {
-              // 重置功能（清空所有数据）
-              if (onUserInfoUpdate) {
-                onUserInfoUpdate(null) // 传递 null 表示重置
-              }
-            }
-            // 确保关闭设置并回到主页面
-            setShowSettings(false)
-            setCurrentView('chat')
-          }}
+            <SettingsView 
+              userInfo={userInfo} 
+              onClose={() => {
+                setShowSettings(false)
+                // 确保回到主页面视图
+                setCurrentView('chat')
+              }}
+              onReset={(updatedUserInfo) => {
+                // 名字更新后的回调
+                if (updatedUserInfo && onUserInfoUpdate) {
+                  onUserInfoUpdate(updatedUserInfo)
+                } else {
+                  // 重置功能（清空所有数据）
+                  if (onUserInfoUpdate) {
+                    onUserInfoUpdate(null) // 传递 null 表示重置
+                  }
+                }
+                // 确保关闭设置并回到主页面
+                setShowSettings(false)
+                setCurrentView('chat')
+              }}
           showOverlay={true}
-        />
+            />
       )}
 
       {/* Capture 弹窗 - 1:1 复刻参考代码 */}
