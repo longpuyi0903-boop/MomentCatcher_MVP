@@ -28,14 +28,17 @@ if __name__ == "__main__":
     print(f"🔗 API 地址: http://{host}:{port}")
     print("="*60 + "\n")
     
-    # 生产环境禁用reload（云端部署平台）
-    reload = os.environ.get("ENV") != "production"
+    # 生产环境禁用reload（云端部署平台，如 Render）
+    # Render 会设置 RENDER 环境变量，或者检查是否有 PORT 环境变量（云端部署标志）
+    is_production = os.environ.get("RENDER") == "true" or os.environ.get("PORT") is not None
+    reload = not is_production
     
     uvicorn.run(
         "api.main:app",
         host=host,
         port=port,
-        reload=reload
+        reload=reload,
+        log_level="info"
     )
 
 
