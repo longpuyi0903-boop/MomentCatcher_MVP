@@ -20,12 +20,8 @@ const BackgroundCarousel = ({ onSelect, images = [] }) => {
     return nameWithoutExt.toUpperCase()
   }
 
-  // 使用传入的images数组，如果为空则使用默认图片
-  const allImages = images && images.length > 0 ? images : [
-    '/星体素材/nebula1.png',
-    '/星体素材/nebula2.png',
-    '/星体素材/nebula3.png',
-  ]
+  // 使用传入的images数组，如果为空则使用空数组（避免加载不存在的文件）
+  const allImages = images && images.length > 0 ? images : []
   
   const totalImages = allImages.length
   
