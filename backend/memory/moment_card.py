@@ -11,8 +11,12 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 # 加载环境变量
-load_dotenv()
+# 先尝试从系统环境变量读取（Railway等云平台）
 QWEN_API_KEY = os.getenv("ALIYUN_QWEN_KEY")
+# 如果系统环境变量没有，再尝试从.env文件加载
+if not QWEN_API_KEY:
+    load_dotenv()
+    QWEN_API_KEY = os.getenv("ALIYUN_QWEN_KEY")
 
 # 初始化通义千问客户端
 client = OpenAI(

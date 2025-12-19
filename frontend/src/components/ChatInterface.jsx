@@ -866,12 +866,24 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
         // 清理资源
         cleanupRecording()
         
-        // 如果格式是 webm，转换为 wav（ASR API 兼容性更好）
+        // 如果格式是 webm，尝试转换为 wav（ASR API 兼容性更好）
         let processedBlob = audioBlob
         if (mimeType.includes('webm') || mimeType.includes('mp4')) {
           try {
-            processedBlob = await convertToWav(audioBlob)
-            console.log('✅ 音频格式转换成功: webm/mp4 -> wav')
+            const convertedBlob = await convertToWav(audioBlob)
+            // 检查转换后的数据是否有效（至少有原始数据的10%）
+            if (convertedBlob.size > audioBlob.size * 0.1) {
+              processedBlob = convertedBlob
+              console.log('✅ 音频格式转换成功: webm/mp4 -> wav', {
+                原始大小: audioBlob.size,
+                转换后大小: convertedBlob.size
+              })
+            } else {
+              console.warn('⚠️ 转换后数据太小，使用原始格式', {
+                原始大小: audioBlob.size,
+                转换后大小: convertedBlob.size
+              })
+            }
           } catch (error) {
             console.warn('⚠️ 格式转换失败，使用原始格式:', error)
             // 如果转换失败，继续使用原始格式
@@ -939,15 +951,26 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
       setRecordingState('processing')
       setAudioStatus('PROCESSING...')
       
-      // 检查录音时长（至少1秒）
-      if (duration < 1) {
-        throw new Error('录音时间太短，请至少录音1秒')
+      // 检查录音时长（至少0.5秒，降低阈值以提高兼容性）
+      if (duration < 0.5) {
+        throw new Error('录音时间太短，请至少录音0.5秒')
       }
       
-      // 检查音频大小（至少1KB）
-      if (audioBlob.size < 1024) {
+      // 检查音频大小（降低阈值：至少512字节，提高兼容性）
+      if (audioBlob.size < 512) {
+        console.error('❌ 音频数据太小:', {
+          大小: audioBlob.size,
+          时长: duration,
+          类型: audioBlob.type
+        })
         throw new Error('录音数据太小，可能没有捕获到有效音频')
       }
+      
+      console.log('✅ 音频数据检查通过:', {
+        大小: audioBlob.size,
+        时长: duration + '秒',
+        类型: audioBlob.type
+      })
       
       // 根据实际格式确定文件扩展名
       let fileExtension = '.wav'

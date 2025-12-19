@@ -14,10 +14,14 @@ from dashscope import Files
 from dashscope.audio.asr import Transcription
 
 # 加载环境变量
-load_dotenv()
+# 先尝试从系统环境变量读取（Railway等云平台）
 DASHSCOPE_API_KEY = os.getenv("ALIYUN_QWEN_KEY")
+# 如果系统环境变量没有，再尝试从.env文件加载
 if not DASHSCOPE_API_KEY:
-    raise EnvironmentError("ALIYUN_QWEN_KEY not found in .env")
+    load_dotenv()
+    DASHSCOPE_API_KEY = os.getenv("ALIYUN_QWEN_KEY")
+if not DASHSCOPE_API_KEY:
+    raise EnvironmentError("ALIYUN_QWEN_KEY not found. Please check your environment variables or .env file.")
 
 # 设置 DashScope API Key
 dashscope.api_key = DASHSCOPE_API_KEY
