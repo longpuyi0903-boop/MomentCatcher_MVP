@@ -98,8 +98,13 @@ export const useBGM = (isAppReady, isRecording, isVoicePlaying) => {
         sourceRef.current = null
       }
       
-      // 加载音频文件
-      const response = await fetch(bgmPath)
+      // 加载音频文件（URL编码处理空格和特殊字符）
+      const encodedPath = encodeURI(bgmPath)
+      console.log('🎵 加载BGM:', encodedPath)
+      const response = await fetch(encodedPath)
+      if (!response.ok) {
+        throw new Error(`BGM加载失败: ${response.status} ${response.statusText}`)
+      }
       const arrayBuffer = await response.arrayBuffer()
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
       audioBufferRef.current = audioBuffer

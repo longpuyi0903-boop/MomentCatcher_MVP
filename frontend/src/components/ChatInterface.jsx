@@ -372,8 +372,11 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
         setIsLoading(true)
         console.log('🚀 开始初始化聊天，user_id:', userInfo.user_id)
         const result = await startMomentAPI(userInfo.user_id)
-        console.log('✅ 初始化成功，greeting:', result.greeting)
-        const greetingMsg = { role: 'assistant', content: result.greeting }
+        console.log('✅ 初始化成功，完整返回数据:', result)
+        console.log('✅ greeting字段:', result.greeting)
+        // 如果greeting不存在，使用默认值
+        const greeting = result.greeting || result.message || '我在呢，有什么想说的吗？'
+        const greetingMsg = { role: 'assistant', content: greeting }
         setCurrentMomentId(result.moment_id)
         // 只有在messages为空时才设置初始问候语，避免覆盖已有消息
         // 使用函数式更新，确保获取最新的messages状态
