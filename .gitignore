@@ -68,6 +68,9 @@ audio_outputs/
 *.wav
 *.m4a
 
+# 但允许前端public目录下的BGM文件
+!frontend/public/bgm/*.mp3
+
 # 压缩包
 *.zip
 *.rar

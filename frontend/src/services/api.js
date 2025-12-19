@@ -2,7 +2,14 @@ import axios from 'axios'
 
 // 生产环境使用环境变量，开发环境使用相对路径（通过vite proxy）
 // 如果设置了VITE_API_BASE_URL，使用它；否则使用相对路径（开发环境通过vite proxy转发）
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+let API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+// 确保URL包含协议（如果提供了域名但没有协议，自动添加https://）
+if (API_BASE_URL && !API_BASE_URL.startsWith('http') && !API_BASE_URL.startsWith('/')) {
+  API_BASE_URL = `https://${API_BASE_URL}`
+} else if (API_BASE_URL && !API_BASE_URL.startsWith('http') && API_BASE_URL.includes('.railway.app')) {
+  API_BASE_URL = `https://${API_BASE_URL}`
+}
+console.log('🔧 [API] 最终 baseURL:', API_BASE_URL)
 
 // 用于构建音频URL的完整地址（如果API_BASE_URL是相对路径，需要单独处理）
 export const getAudioBaseURL = () => {
