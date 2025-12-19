@@ -37,6 +37,16 @@ export const useBGM = (isAppReady, isRecording, isVoicePlaying) => {
         gainNodeRef.current.connect(audioContextRef.current.destination)
         gainNodeRef.current.gain.value = 0 // 初始音量为0
         console.log('🎵 AudioContext初始化成功')
+        
+        // 【测试优化】移动端：立即尝试恢复AudioContext（需要用户交互）
+        if (audioContextRef.current.state === 'suspended') {
+          // 尝试恢复（可能需要用户交互）
+          audioContextRef.current.resume().then(() => {
+            console.log('🎵 [移动端优化] AudioContext已恢复')
+          }).catch(err => {
+            console.warn('⚠️ [移动端优化] AudioContext恢复失败，需要用户交互:', err)
+          })
+        }
       } catch (error) {
         console.error('❌ AudioContext初始化失败:', error)
       }
@@ -45,7 +55,7 @@ export const useBGM = (isAppReady, isRecording, isVoicePlaying) => {
       audioContextRef.current.resume().then(() => {
         console.log('🎵 AudioContext已恢复')
       }).catch(err => {
-        console.error('❌ AudioContext恢复失败:', err)
+        console.warn('⚠️ AudioContext恢复失败，可能需要用户交互:', err)
       })
     }
   }
@@ -143,8 +153,42 @@ export const useBGM = (isAppReady, isRecording, isVoicePlaying) => {
       const bgmPath = selectRandomBGM()
       if (bgmPath) {
         setCurrentBGM(bgmPath)
-        loadAndPlayBGM(bgmPath)
+        
+        // 【测试优化】移动端：延迟加载BGM，确保AudioContext已初始化
+        // 移动端浏览器需要用户交互才能播放音频，所以延迟一点
+        const delay = /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent) ? 500 : 0
+        setTimeout(() => {
+          loadAndPlayBGM(bgmPath)
+        }, delay)
       }
+    }
+  }, [isAppReady, currentBGM])
+  
+  // 【测试优化】移动端：监听用户交互，恢复AudioContext
+  useEffect(() => {
+    if (!isAppReady) return
+    
+    const handleUserInteraction = () => {
+      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume().then(() => {
+          console.log('🎵 [移动端优化] 用户交互后AudioContext已恢复')
+          // 如果BGM还没播放，尝试播放
+          if (!isPlayingRef.current && currentBGM) {
+            loadAndPlayBGM(currentBGM)
+          }
+        }).catch(err => {
+          console.warn('⚠️ [移动端优化] 恢复AudioContext失败:', err)
+        })
+      }
+    }
+    
+    // 监听用户交互事件（移动端需要）
+    document.addEventListener('touchstart', handleUserInteraction, { once: true })
+    document.addEventListener('click', handleUserInteraction, { once: true })
+    
+    return () => {
+      document.removeEventListener('touchstart', handleUserInteraction)
+      document.removeEventListener('click', handleUserInteraction)
     }
   }, [isAppReady, currentBGM])
   

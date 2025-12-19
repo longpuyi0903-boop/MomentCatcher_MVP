@@ -878,7 +878,8 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
         console.log('⚡ [测试优化] 跳过格式转换，直接使用原始格式:', {
           格式: mimeType,
           大小: audioBlob.size,
-          时长: finalDuration + '秒'
+          时长: finalDuration + '秒',
+          注意: '如果看到"格式转换成功"日志，说明浏览器缓存了旧代码，请强制刷新（Ctrl+Shift+R）'
         })
         
         // 上传并识别（传递录音时长）
@@ -1046,15 +1047,22 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
           setEmotion(normalizeEmotion(chatResult.emotion))
           
           // 更新音频（添加时间戳防止缓存）
+          console.log('🔊 [测试优化] chatResult音频信息:', {
+            audio_path: chatResult.audio_path,
+            has_audio: !!chatResult.audio_path
+          })
           if (chatResult.audio_path) {
             const basePath = chatResult.audio_path.startsWith('http') 
               ? chatResult.audio_path 
               : `${getAudioBaseURL()}${chatResult.audio_path}`
             const audioPath = `${basePath}?t=${Date.now()}`
+            console.log('🔊 [测试优化] 设置音频URL:', audioPath)
             setAudioUrl(null)
             setTimeout(() => {
               setAudioUrl(audioPath)
             }, 100)
+          } else {
+            console.warn('⚠️ [测试优化] chatResult中没有audio_path字段')
           }
           
           setAudioStatus('LINK ACTIVE')
