@@ -832,22 +832,23 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
       
       streamRef.current = stream
       
-      // 创建 MediaRecorder
-      // 优先使用浏览器支持的格式，但优先选择 wav（ASR API 兼容性最好）
-      let mimeType = 'audio/wav'
-      if (MediaRecorder.isTypeSupported('audio/wav')) {
-        mimeType = 'audio/wav'
-      } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+      // 【测试优化】优先使用webm格式（浏览器原生支持，无需转换，速度更快）
+      // 后端ASR支持webm格式，无需前端转换
+      let mimeType = 'audio/webm;codecs=opus'
+      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
         mimeType = 'audio/webm;codecs=opus'
       } else if (MediaRecorder.isTypeSupported('audio/webm')) {
         mimeType = 'audio/webm'
       } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
         mimeType = 'audio/mp4'
+      } else if (MediaRecorder.isTypeSupported('audio/wav')) {
+        mimeType = 'audio/wav'
       }
       
+      // 【测试优化】降低比特率，减少文件大小，提升上传速度
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: mimeType,
-        audioBitsPerSecond: 128000, // 128kbps
+        audioBitsPerSecond: 64000, // 64kbps（降低一半，减少文件大小）
       })
       
       mediaRecorderRef.current = mediaRecorder
@@ -871,29 +872,14 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
         // 清理资源
         cleanupRecording()
         
-        // 如果格式是 webm，尝试转换为 wav（ASR API 兼容性更好）
+        // 【测试优化】跳过格式转换，直接使用原始格式上传（大幅提升速度）
+        // 后端ASR引擎支持webm/mp4格式，无需前端转换
         let processedBlob = audioBlob
-        if (mimeType.includes('webm') || mimeType.includes('mp4')) {
-          try {
-            const convertedBlob = await convertToWav(audioBlob)
-            // 检查转换后的数据是否有效（至少有原始数据的10%）
-            if (convertedBlob.size > audioBlob.size * 0.1) {
-              processedBlob = convertedBlob
-              console.log('✅ 音频格式转换成功: webm/mp4 -> wav', {
-                原始大小: audioBlob.size,
-                转换后大小: convertedBlob.size
-              })
-            } else {
-              console.warn('⚠️ 转换后数据太小，使用原始格式', {
-                原始大小: audioBlob.size,
-                转换后大小: convertedBlob.size
-              })
-            }
-          } catch (error) {
-            console.warn('⚠️ 格式转换失败，使用原始格式:', error)
-            // 如果转换失败，继续使用原始格式
-          }
-        }
+        console.log('⚡ [测试优化] 跳过格式转换，直接使用原始格式:', {
+          格式: mimeType,
+          大小: audioBlob.size,
+          时长: finalDuration + '秒'
+        })
         
         // 上传并识别（传递录音时长）
         await handleProcessRecording(processedBlob, finalDuration)
@@ -906,8 +892,8 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
         cleanupRecording()
       }
       
-      // 开始录音
-      mediaRecorder.start(1000) // 每1秒收集一次数据
+      // 【测试优化】增加数据收集频率，减少延迟（每500ms收集一次）
+      mediaRecorder.start(500) // 每500ms收集一次数据，减少延迟
       setIsRecording(true)
       setRecordingState('recording')
       setAudioStatus('RECEIVING...')
@@ -952,17 +938,19 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
 
   // 处理录音并上传识别
   const handleProcessRecording = async (audioBlob, duration = 0) => {
+    const startTime = Date.now() // 【测试优化】性能计时
     try {
       setRecordingState('processing')
       setAudioStatus('PROCESSING...')
       
-      // 检查录音时长（至少0.5秒，降低阈值以提高兼容性）
-      if (duration < 0.5) {
-        throw new Error('录音时间太短，请至少录音0.5秒')
+      // 【测试优化】降低检查阈值，提高兼容性
+      // 检查录音时长（至少0.3秒，降低阈值）
+      if (duration < 0.3) {
+        throw new Error('录音时间太短，请至少录音0.3秒')
       }
       
-      // 检查音频大小（降低阈值：至少512字节，提高兼容性）
-      if (audioBlob.size < 512) {
+      // 检查音频大小（降低阈值：至少256字节，提高兼容性）
+      if (audioBlob.size < 256) {
         console.error('❌ 音频数据太小:', {
           大小: audioBlob.size,
           时长: duration,
@@ -974,7 +962,8 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
       console.log('✅ 音频数据检查通过:', {
         大小: audioBlob.size,
         时长: duration + '秒',
-        类型: audioBlob.type
+        类型: audioBlob.type,
+        文件大小KB: (audioBlob.size / 1024).toFixed(2)
       })
       
       // 根据实际格式确定文件扩展名
@@ -992,17 +981,21 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
       // 创建 File 对象（ASR API 需要 File 对象）
       const audioFile = new File([audioBlob], fileName, { type: audioBlob.type })
       
-      console.log('📤 上传音频文件:', {
+      const uploadStartTime = Date.now() // 【测试优化】上传计时
+      console.log('📤 [测试优化] 开始上传音频文件:', {
         name: fileName,
         type: audioBlob.type,
         size: audioBlob.size,
+        sizeKB: (audioBlob.size / 1024).toFixed(2),
         duration: duration + '秒'
       })
       
       // 调用 ASR API
       const result = await asrAPI(audioFile)
+      const uploadTime = Date.now() - uploadStartTime // 【测试优化】上传耗时
       
-      console.log('📥 ASR API 响应:', result)
+      console.log('📥 [测试优化] ASR API 响应:', result)
+      console.log('⏱️ [测试优化] 上传+识别总耗时:', uploadTime + 'ms', `(${(uploadTime/1000).toFixed(2)}秒)`)
       
       // 如果失败，打印详细信息
       if (!result || !result.success) {
