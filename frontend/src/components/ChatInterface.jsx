@@ -124,8 +124,8 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
   // BGM状态：监听语音播放（audioUrl存在且正在播放）
   const [isVoicePlaying, setIsVoicePlaying] = useState(false)
   
-  // BGM管理器
-  useBGM(isAppReady, isRecording, isVoicePlaying)
+  // BGM管理器 - 获取playBGM用于手动触发播放
+  const { playBGM } = useBGM(isAppReady, isRecording, isVoicePlaying)
   const [recordingState, setRecordingState] = useState('idle') // idle / recording / processing / error
   const [recordingDuration, setRecordingDuration] = useState(0) // 录音时长（秒）
 
@@ -430,22 +430,34 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
 
   // 【移动端修复】标记用户已交互（移动端音频播放需要）
   useEffect(() => {
-    const markUserInteraction = () => {
+    const markUserInteraction = async () => {
       userInteractedRef.current = true
       console.log('👆 [移动端修复] 用户交互标记已设置')
+      
+      // 【移动端修复】同时触发BGM播放
+      if (playBGM && isAppReady) {
+        console.log('🎵 [移动端修复] 用户交互触发BGM播放')
+        try {
+          await playBGM()
+        } catch (err) {
+          console.warn('⚠️ [移动端修复] BGM播放失败:', err)
+        }
+      }
     }
     
     // 监听任何用户交互（包括点击、触摸、输入等）
-    document.addEventListener('touchstart', markUserInteraction, { once: true })
-    document.addEventListener('click', markUserInteraction, { once: true })
-    document.addEventListener('keydown', markUserInteraction, { once: true })
+    // 注意：不使用once，因为可能需要多次尝试
+    const events = ['touchstart', 'touchend', 'click', 'keydown', 'mousedown']
+    events.forEach(event => {
+      document.addEventListener(event, markUserInteraction, { passive: true })
+    })
     
     return () => {
-      document.removeEventListener('touchstart', markUserInteraction)
-      document.removeEventListener('click', markUserInteraction)
-      document.removeEventListener('keydown', markUserInteraction)
+      events.forEach(event => {
+        document.removeEventListener(event, markUserInteraction)
+      })
     }
-  }, [])
+  }, [playBGM, isAppReady])
   
   // 【移动端修复】自动播放音频（每次audioUrl变化时重新加载并播放）
   useEffect(() => {
@@ -457,51 +469,74 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
     console.log('🔊 [移动端修复] audioUrl变化，准备播放:', audioUrl)
     console.log('🔊 [移动端修复] 用户交互标记:', userInteractedRef.current)
     
-    // 先停止并重置音频
-    audioRef.current.pause()
-    audioRef.current.currentTime = 0
-    
-    // 设置新的音频源（audio元素已存在，只需更新src）
-    audioRef.current.src = audioUrl
-    
-    // 【移动端修复】播放音频（移动端需要用户交互）
+    // 【移动端修复】播放音频的函数
     const playAudio = async () => {
+      const audio = audioRef.current
+      if (!audio) return
+      
       try {
-        // 【移动端修复】确保音频元素已加载
-        if (audioRef.current.readyState < 2) {
-          console.log('🔊 [移动端修复] 等待音频加载，当前readyState:', audioRef.current.readyState)
-          await new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
-              reject(new Error('音频加载超时'))
-            }, 5000)
-            
-            audioRef.current.addEventListener('canplay', () => {
-              clearTimeout(timeout)
-              resolve()
-            }, { once: true })
-            
-            audioRef.current.addEventListener('error', (e) => {
-              clearTimeout(timeout)
-              reject(e)
-            }, { once: true })
-            
-            // 强制加载
-            audioRef.current.load()
-          })
-        }
+        // 先停止并重置音频
+        audio.pause()
+        audio.currentTime = 0
         
-        console.log('🔊 [移动端修复] 开始播放语音，URL:', audioUrl)
-        console.log('🔊 [移动端修复] 音频元素状态:', {
-          readyState: audioRef.current.readyState,
-          paused: audioRef.current.paused,
-          muted: audioRef.current.muted,
-          volume: audioRef.current.volume,
-          src: audioRef.current.src
+        // 设置新的音频源
+        audio.src = audioUrl
+        
+        // 【移动端修复】设置关键属性
+        audio.preload = 'auto'
+        audio.playsInline = true // iOS关键属性
+        
+        // 强制加载
+        audio.load()
+        
+        // 等待音频可以播放
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            console.warn('⚠️ [移动端修复] 音频加载超时，尝试强制播放')
+            resolve()
+          }, 5000)
+          
+          const handleCanPlay = () => {
+            clearTimeout(timeout)
+            audio.removeEventListener('canplay', handleCanPlay)
+            audio.removeEventListener('error', handleError)
+            console.log('🔊 [移动端修复] 音频可以播放，readyState:', audio.readyState)
+            resolve()
+          }
+          
+          const handleError = (e) => {
+            clearTimeout(timeout)
+            audio.removeEventListener('canplay', handleCanPlay)
+            audio.removeEventListener('error', handleError)
+            console.error('❌ [移动端修复] 音频加载错误:', e)
+            reject(e)
+          }
+          
+          audio.addEventListener('canplay', handleCanPlay, { once: true })
+          audio.addEventListener('error', handleError, { once: true })
+          
+          // 如果已经可以播放
+          if (audio.readyState >= 2) {
+            clearTimeout(timeout)
+            audio.removeEventListener('canplay', handleCanPlay)
+            audio.removeEventListener('error', handleError)
+            resolve()
+          }
         })
         
-        setIsVoicePlaying(true) // 标记语音开始播放
+        console.log('🔊 [移动端修复] 开始播放语音')
+        console.log('🔊 [移动端修复] 音频状态:', {
+          readyState: audio.readyState,
+          paused: audio.paused,
+          muted: audio.muted,
+          volume: audio.volume,
+          src: audio.src?.substring(0, 50)
+        })
         
-        const playPromise = audioRef.current.play()
+        setIsVoicePlaying(true)
+        
+        // 播放音频
+        const playPromise = audio.play()
         
         if (playPromise !== undefined) {
           await playPromise
@@ -510,44 +545,37 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
       } catch (err) {
         console.error('❌ [移动端修复] 语音播放失败:', err)
         console.error('   错误详情:', err.message)
-        console.error('   错误堆栈:', err.stack)
-        console.error('   音频元素状态:', {
-          readyState: audioRef.current?.readyState,
-          paused: audioRef.current?.paused,
-          muted: audioRef.current?.muted,
-          volume: audioRef.current?.volume,
-          src: audioRef.current?.src,
-          error: audioRef.current?.error
-        })
         setIsVoicePlaying(false)
         
-        // 【移动端修复】如果自动播放失败，显示提示
-        if (/Mobile|Android|iPhone|iPad/i.test(navigator.userAgent)) {
-          console.warn('⚠️ [移动端修复] 移动端自动播放被阻止')
-          console.warn('   用户交互标记:', userInteractedRef.current)
-          console.warn('   音频URL:', audioUrl)
+        // 【移动端修复】如果播放失败，显示提示并等待用户交互
+        const isMobile = /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent)
+        if (isMobile) {
+          console.warn('⚠️ [移动端修复] 移动端自动播放被阻止，等待用户点击')
+          
+          // 创建一个临时的点击监听器来播放音频
+          const handleTouchToPlay = async () => {
+            console.log('🔊 [移动端修复] 用户点击，重新尝试播放')
+            userInteractedRef.current = true
+            try {
+              await audioRef.current?.play()
+              setIsVoicePlaying(true)
+              console.log('🔊 [移动端修复] 点击后播放成功')
+            } catch (e) {
+              console.error('❌ [移动端修复] 点击后播放仍失败:', e)
+            }
+            document.removeEventListener('touchstart', handleTouchToPlay)
+            document.removeEventListener('click', handleTouchToPlay)
+          }
+          
+          document.addEventListener('touchstart', handleTouchToPlay, { once: true, passive: true })
+          document.addEventListener('click', handleTouchToPlay, { once: true, passive: true })
         }
       }
     }
     
-    // 【移动端修复】如果用户已交互（发送消息/录音），立即播放
-    // 否则等待用户交互（但通常用户已经交互过了）
-    if (userInteractedRef.current) {
-      console.log('🔊 [移动端修复] 用户已交互，立即播放语音')
-      playAudio()
-    } else {
-      console.log('🔊 [移动端修复] 等待用户交互后播放语音')
-      // 等待用户交互后再播放
-      const handleInteraction = () => {
-        userInteractedRef.current = true
-        console.log('🔊 [移动端修复] 用户交互触发，播放语音')
-        playAudio()
-        document.removeEventListener('touchstart', handleInteraction)
-        document.removeEventListener('click', handleInteraction)
-      }
-      document.addEventListener('touchstart', handleInteraction, { once: true })
-      document.addEventListener('click', handleInteraction, { once: true })
-    }
+    // 立即尝试播放
+    playAudio()
+    
   }, [audioUrl])
   
 
@@ -1581,6 +1609,8 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
         ref={audioRef}
         src={audioUrl || ''}
         preload="auto"
+        playsInline={true}
+        webkit-playsinline="true"
         onPlay={() => {
           console.log('🔊 [移动端修复] audio元素onPlay事件触发')
           setIsVoicePlaying(true)
