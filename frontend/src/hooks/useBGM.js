@@ -128,6 +128,12 @@ export const useBGM = (isAppReady, isRecording, isVoicePlaying) => {
       
       sourceRef.current = source
       
+      // 【移动端修复】确保AudioContext在运行状态
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume()
+        console.log('🎵 [移动端修复] 播放前恢复AudioContext')
+      }
+      
       // 开始播放
       source.start(0)
       isPlayingRef.current = true
@@ -141,25 +147,30 @@ export const useBGM = (isAppReady, isRecording, isVoicePlaying) => {
       gainNode.gain.setValueAtTime(0, currentTime)
       gainNode.gain.linearRampToValueAtTime(targetVolume, currentTime + FADE_IN_DURATION / 1000)
       
-      console.log('🎵 BGM开始播放:', bgmPath)
+      console.log('🎵 BGM开始播放:', bgmPath, 'AudioContext状态:', audioContext.state, '音量:', targetVolume)
     } catch (error) {
       console.error('❌ BGM加载失败:', error)
     }
   }
   
-  // 当应用准备就绪时，随机选择并播放BGM
+  // 当应用准备就绪时，随机选择BGM（但不立即播放，等待用户交互）
   useEffect(() => {
     if (isAppReady && !currentBGM && !isPlayingRef.current) {
       const bgmPath = selectRandomBGM()
       if (bgmPath) {
         setCurrentBGM(bgmPath)
+        console.log('🎵 [移动端修复] BGM已选择，等待用户交互:', bgmPath)
         
-        // 【测试优化】移动端：延迟加载BGM，确保AudioContext已初始化
-        // 移动端浏览器需要用户交互才能播放音频，所以延迟一点
-        const delay = /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent) ? 500 : 0
-        setTimeout(() => {
-          loadAndPlayBGM(bgmPath)
-        }, delay)
+        // 【移动端修复】移动端不自动播放，等待用户交互
+        // 桌面端可以尝试自动播放
+        const isMobile = /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent)
+        if (!isMobile) {
+          // 桌面端：延迟一点后尝试播放
+          setTimeout(() => {
+            loadAndPlayBGM(bgmPath)
+          }, 500)
+        }
+        // 移动端：等待用户交互（在handleUserInteraction中播放）
       }
     }
   }, [isAppReady, currentBGM])
@@ -168,51 +179,60 @@ export const useBGM = (isAppReady, isRecording, isVoicePlaying) => {
   useEffect(() => {
     if (!isAppReady) return
     
-    const handleUserInteraction = () => {
-      console.log('👆 [移动端修复] 检测到用户交互，恢复AudioContext')
+    const handleUserInteraction = async () => {
+      console.log('👆 [移动端修复] 检测到用户交互，恢复AudioContext并播放BGM')
       
       // 初始化AudioContext（如果还没初始化）
       initAudioContext()
       
       // 恢复AudioContext（如果被暂停）
-      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
-        audioContextRef.current.resume().then(() => {
-          console.log('🎵 [移动端修复] AudioContext已恢复，尝试播放BGM')
-          // 如果BGM还没播放，立即播放
-          if (!isPlayingRef.current && currentBGM) {
-            loadAndPlayBGM(currentBGM)
-          } else if (!currentBGM) {
-            // 如果BGM还没选择，选择并播放
-            const bgmPath = selectRandomBGM()
-            if (bgmPath) {
-              setCurrentBGM(bgmPath)
-              loadAndPlayBGM(bgmPath)
-            }
-          }
-        }).catch(err => {
-          console.warn('⚠️ [移动端修复] 恢复AudioContext失败:', err)
-        })
-      } else if (audioContextRef.current && audioContextRef.current.state === 'running') {
-        // AudioContext已经在运行，直接播放BGM
-        if (!isPlayingRef.current && currentBGM) {
-          loadAndPlayBGM(currentBGM)
-        } else if (!currentBGM) {
-          const bgmPath = selectRandomBGM()
-          if (bgmPath) {
-            setCurrentBGM(bgmPath)
-            loadAndPlayBGM(bgmPath)
+      if (audioContextRef.current) {
+        if (audioContextRef.current.state === 'suspended') {
+          try {
+            await audioContextRef.current.resume()
+            console.log('🎵 [移动端修复] AudioContext已恢复，状态:', audioContextRef.current.state)
+          } catch (err) {
+            console.warn('⚠️ [移动端修复] 恢复AudioContext失败:', err)
+            return
           }
         }
+        
+        // 确保AudioContext在运行状态
+        if (audioContextRef.current.state === 'running') {
+          console.log('🎵 [移动端修复] AudioContext运行中，尝试播放BGM')
+          // 如果BGM还没播放，立即播放
+          if (!isPlayingRef.current) {
+            if (currentBGM) {
+              console.log('🎵 [移动端修复] 使用已有BGM:', currentBGM)
+              await loadAndPlayBGM(currentBGM)
+            } else {
+              // 如果BGM还没选择，选择并播放
+              const bgmPath = selectRandomBGM()
+              if (bgmPath) {
+                console.log('🎵 [移动端修复] 选择新BGM:', bgmPath)
+                setCurrentBGM(bgmPath)
+                await loadAndPlayBGM(bgmPath)
+              }
+            }
+          } else {
+            console.log('🎵 [移动端修复] BGM已在播放')
+          }
+        } else {
+          console.warn('⚠️ [移动端修复] AudioContext状态异常:', audioContextRef.current.state)
+        }
+      } else {
+        console.warn('⚠️ [移动端修复] AudioContext未初始化')
       }
     }
     
-    // 监听所有用户交互事件（移动端需要）- 不限制次数，确保BGM能播放
-    document.addEventListener('touchstart', handleUserInteraction, { passive: true })
-    document.addEventListener('click', handleUserInteraction, { passive: true })
+    // 【移动端修复】监听所有用户交互事件（不限制次数，确保BGM能播放）
+    // 使用capture阶段，确保能捕获到所有交互（包括按钮点击）
+    document.addEventListener('touchstart', handleUserInteraction, { passive: true, capture: true })
+    document.addEventListener('click', handleUserInteraction, { passive: true, capture: true })
     
     return () => {
-      document.removeEventListener('touchstart', handleUserInteraction)
-      document.removeEventListener('click', handleUserInteraction)
+      document.removeEventListener('touchstart', handleUserInteraction, { capture: true })
+      document.removeEventListener('click', handleUserInteraction, { capture: true })
     }
   }, [isAppReady, currentBGM])
   
