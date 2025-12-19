@@ -32,10 +32,21 @@ export const initAPI = async (userName, agentName) => {
 
 // 开始新 Moment
 export const startMomentAPI = async (userId) => {
-  const response = await api.post('/moments/start', {
-    user_id: userId,
-  })
-  return response.data
+  try {
+    console.log('📡 [API] 请求 startMomentAPI, userId:', userId)
+    console.log('📡 [API] baseURL:', API_BASE_URL)
+    const response = await api.post('/moments/start', {
+      user_id: userId,
+    })
+    console.log('📡 [API] 响应状态:', response.status)
+    console.log('📡 [API] 响应数据:', response.data)
+    console.log('📡 [API] greeting字段:', response.data?.greeting)
+    return response.data
+  } catch (error) {
+    console.error('❌ [API] startMomentAPI 错误:', error)
+    console.error('❌ [API] 错误响应:', error.response?.data)
+    throw error
+  }
 }
 
 // 发送消息

@@ -74,6 +74,7 @@ export const useBGM = (isAppReady, isRecording, isVoicePlaying) => {
   const selectRandomBGM = () => {
     if (bgmFiles.length === 0) return null
     const randomIndex = Math.floor(Math.random() * bgmFiles.length)
+    // 使用相对路径，Vite会自动处理public目录
     return `/bgm/${bgmFiles[randomIndex]}`
   }
   
