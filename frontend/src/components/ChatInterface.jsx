@@ -139,6 +139,7 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
   const streamRef = useRef(null) // 音频流
   const lastAssistantMsgRef = useRef(null) // 保存最后一条assistant消息，确保processing期间也能显示
   const lastUserMsgRef = useRef(null) // 保存最后一条user消息，确保processing期间也能显示
+  const userInteractedRef = useRef(false) // 【移动端修复】用户交互标记
 
   // ==========================================
   // 核心修复：使用 sessionUserId（不持久化）来区分新登录和会话内切换
@@ -427,6 +428,25 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
     initiateChat()
   }, [shouldShowSelector, selectedBackground, backgroundLoaded, particlesInitialized, userInfo?.user_id, userInfo?.agent_name])
 
+  // 【移动端修复】标记用户已交互（移动端音频播放需要）
+  useEffect(() => {
+    const markUserInteraction = () => {
+      userInteractedRef.current = true
+      console.log('👆 [移动端修复] 用户交互标记已设置')
+    }
+    
+    // 监听任何用户交互（包括点击、触摸、输入等）
+    document.addEventListener('touchstart', markUserInteraction, { once: true })
+    document.addEventListener('click', markUserInteraction, { once: true })
+    document.addEventListener('keydown', markUserInteraction, { once: true })
+    
+    return () => {
+      document.removeEventListener('touchstart', markUserInteraction)
+      document.removeEventListener('click', markUserInteraction)
+      document.removeEventListener('keydown', markUserInteraction)
+    }
+  }, [])
+  
   // 自动播放音频（每次audioUrl变化时重新加载并播放）
   useEffect(() => {
     if (audioUrl && audioRef.current) {
@@ -439,12 +459,45 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
       audioRef.current.src = audioUrl
       // 重新加载音频源
       audioRef.current.load()
-      // 播放新音频
-      setIsVoicePlaying(true) // 标记语音开始播放
-      audioRef.current.play().catch(err => {
-        console.error('Audio play failed:', err)
-        setIsVoicePlaying(false)
-      })
+      
+      // 【移动端修复】播放音频（移动端需要用户交互）
+      const playAudio = () => {
+        setIsVoicePlaying(true) // 标记语音开始播放
+        const playPromise = audioRef.current.play()
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('🔊 [移动端修复] 语音播放成功')
+            })
+            .catch(err => {
+              console.error('❌ [移动端修复] 语音播放失败:', err)
+              console.error('   错误详情:', err.message)
+              setIsVoicePlaying(false)
+              
+              // 【移动端修复】如果自动播放失败，显示提示
+              if (/Mobile|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                console.warn('⚠️ [移动端修复] 移动端自动播放被阻止，可能需要用户交互')
+                // 可以在这里显示一个播放按钮，让用户手动播放
+              }
+            })
+        }
+      }
+      
+      // 移动端：如果用户已交互，立即播放；否则等待用户交互
+      if (userInteractedRef.current) {
+        playAudio()
+      } else {
+        // 等待用户交互后再播放
+        const handleInteraction = () => {
+          userInteractedRef.current = true
+          playAudio()
+          document.removeEventListener('touchstart', handleInteraction)
+          document.removeEventListener('click', handleInteraction)
+        }
+        document.addEventListener('touchstart', handleInteraction, { once: true })
+        document.addEventListener('click', handleInteraction, { once: true })
+      }
     } else {
       setIsVoicePlaying(false)
     }
@@ -618,6 +671,9 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
 
       setAudioStatus('PROCESSING...')
 
+      // 【移动端修复】发送消息前标记用户交互（确保后续音频可以播放）
+      userInteractedRef.current = true
+      
       // 发送消息（使用最新的消息列表）
       const result = await chatAPI(userInfo.user_id, userMessage, newMessages)
       
@@ -1032,6 +1088,9 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
             // 注意：不在这里重置 messages，因为用户消息已经添加了
             // 只在初始化时设置 greeting，后续保持现有消息
           }
+          
+          // 【移动端修复】发送消息前标记用户交互（确保后续音频可以播放）
+          userInteractedRef.current = true
           
           // 发送消息（使用最新的消息列表）
           const chatResult = await chatAPI(userInfo.user_id, recognizedText, newMessages)

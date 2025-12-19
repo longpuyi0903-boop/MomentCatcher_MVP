@@ -164,27 +164,51 @@ export const useBGM = (isAppReady, isRecording, isVoicePlaying) => {
     }
   }, [isAppReady, currentBGM])
   
-  // 【测试优化】移动端：监听用户交互，恢复AudioContext
+  // 【移动端修复】监听任何用户交互（不限于麦克风），恢复AudioContext并播放BGM
   useEffect(() => {
     if (!isAppReady) return
     
     const handleUserInteraction = () => {
+      console.log('👆 [移动端修复] 检测到用户交互，恢复AudioContext')
+      
+      // 初始化AudioContext（如果还没初始化）
+      initAudioContext()
+      
+      // 恢复AudioContext（如果被暂停）
       if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
         audioContextRef.current.resume().then(() => {
-          console.log('🎵 [移动端优化] 用户交互后AudioContext已恢复')
-          // 如果BGM还没播放，尝试播放
+          console.log('🎵 [移动端修复] AudioContext已恢复，尝试播放BGM')
+          // 如果BGM还没播放，立即播放
           if (!isPlayingRef.current && currentBGM) {
             loadAndPlayBGM(currentBGM)
+          } else if (!currentBGM) {
+            // 如果BGM还没选择，选择并播放
+            const bgmPath = selectRandomBGM()
+            if (bgmPath) {
+              setCurrentBGM(bgmPath)
+              loadAndPlayBGM(bgmPath)
+            }
           }
         }).catch(err => {
-          console.warn('⚠️ [移动端优化] 恢复AudioContext失败:', err)
+          console.warn('⚠️ [移动端修复] 恢复AudioContext失败:', err)
         })
+      } else if (audioContextRef.current && audioContextRef.current.state === 'running') {
+        // AudioContext已经在运行，直接播放BGM
+        if (!isPlayingRef.current && currentBGM) {
+          loadAndPlayBGM(currentBGM)
+        } else if (!currentBGM) {
+          const bgmPath = selectRandomBGM()
+          if (bgmPath) {
+            setCurrentBGM(bgmPath)
+            loadAndPlayBGM(bgmPath)
+          }
+        }
       }
     }
     
-    // 监听用户交互事件（移动端需要）
-    document.addEventListener('touchstart', handleUserInteraction, { once: true })
-    document.addEventListener('click', handleUserInteraction, { once: true })
+    // 监听所有用户交互事件（移动端需要）- 不限制次数，确保BGM能播放
+    document.addEventListener('touchstart', handleUserInteraction, { passive: true })
+    document.addEventListener('click', handleUserInteraction, { passive: true })
     
     return () => {
       document.removeEventListener('touchstart', handleUserInteraction)
