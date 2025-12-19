@@ -24,7 +24,7 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
                     oldAssistant &&
                     oldAssistant.content !== newMessages[0].content
     
-    if (isReset || (source.includes('init') && oldMessages.length > 0)) {
+    if (isReset || (source && source.includes('init') && oldMessages.length > 0)) {
       console.error(`🚨 [${source}] 检测到messages被重置！`)
       console.error('   旧messages长度:', oldMessages.length)
       console.error('   新messages长度:', Array.isArray(newMessages) ? newMessages.length : 0)
@@ -201,7 +201,7 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
               try {
                 // 检查是否有问候语消息（第一条 assistant 消息）
                 const firstAssistantMsg = messages.find(m => m.role === 'assistant')
-                const isGreeting = firstAssistantMsg && (
+                const isGreeting = firstAssistantMsg && firstAssistantMsg.content && (
                   firstAssistantMsg.content.includes('我在呢') || 
                   firstAssistantMsg.content.includes('有什么想说的') ||
                   firstAssistantMsg.content.includes('I\'m here') ||
@@ -1256,7 +1256,7 @@ const ChatInterface = forwardRef(({ userInfo, onCapture, isCrystallizing }, ref)
           const latestAssistantMsg = messages.filter(m => m.role === 'assistant').slice(-1)[0]
           
           // 检查是否是默认问候语
-          const isDefaultGreeting = latestAssistantMsg && (
+          const isDefaultGreeting = latestAssistantMsg && latestAssistantMsg.content && (
             latestAssistantMsg.content.includes('我在呢') || 
             latestAssistantMsg.content.includes('有什么想说的') ||
             latestAssistantMsg.content.includes('I\'m here') ||
