@@ -39,12 +39,17 @@ export const startMomentAPI = async (userId) => {
       user_id: userId,
     })
     console.log('📡 [API] 响应状态:', response.status)
-    console.log('📡 [API] 响应数据:', response.data)
+    console.log('📡 [API] 响应headers:', response.headers)
+    console.log('📡 [API] 响应数据类型:', typeof response.data)
+    console.log('📡 [API] 响应数据原始值:', response.data)
+    console.log('📡 [API] 响应数据JSON:', JSON.stringify(response.data, null, 2))
     console.log('📡 [API] greeting字段:', response.data?.greeting)
+    console.log('📡 [API] moment_id字段:', response.data?.moment_id)
     return response.data
   } catch (error) {
     console.error('❌ [API] startMomentAPI 错误:', error)
     console.error('❌ [API] 错误响应:', error.response?.data)
+    console.error('❌ [API] 错误状态:', error.response?.status)
     throw error
   }
 }
@@ -98,15 +103,25 @@ export const ttsAPI = async (text) => {
 
 // 语音转文字（ASR）
 export const asrAPI = async (audioFile) => {
-  const formData = new FormData()
-  formData.append('audio_file', audioFile)
-  
-  const response = await api.post('/asr', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  })
-  return response.data
+  try {
+    console.log('📡 [ASR API] 开始上传音频文件:', { name: audioFile.name, type: audioFile.type, size: audioFile.size })
+    const formData = new FormData()
+    formData.append('audio_file', audioFile)
+    
+    const response = await api.post('/asr', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    console.log('📡 [ASR API] 响应状态:', response.status)
+    console.log('📡 [ASR API] 响应数据:', JSON.stringify(response.data, null, 2))
+    console.log('📡 [ASR API] text字段:', response.data?.text)
+    return response.data
+  } catch (error) {
+    console.error('❌ [ASR API] 错误:', error)
+    console.error('❌ [ASR API] 错误响应:', error.response?.data)
+    throw error
+  }
 }
 
 // 更新用户名字
