@@ -15,12 +15,21 @@ from dotenv import load_dotenv
 # 初始化 DashScope Key
 # 先尝试从系统环境变量读取（Railway等云平台）
 DASHSCOPE_API_KEY = os.getenv("ALIYUN_QWEN_KEY")
-# 如果系统环境变量没有，再尝试从.env文件加载
+# 调试：打印所有环境变量（仅用于调试）
 if not DASHSCOPE_API_KEY:
+    print("⚠️ ALIYUN_QWEN_KEY not found in system env, trying .env file...")
+    # 打印所有包含 ALIYUN 的环境变量
+    aliyun_vars = {k: v for k, v in os.environ.items() if 'ALIYUN' in k.upper()}
+    if aliyun_vars:
+        print(f"📋 Found ALIYUN-related env vars: {list(aliyun_vars.keys())}")
     load_dotenv()
     DASHSCOPE_API_KEY = os.getenv("ALIYUN_QWEN_KEY")
 if not DASHSCOPE_API_KEY:
+    # 打印所有环境变量名（用于调试）
+    all_env_keys = list(os.environ.keys())
+    print(f"❌ ALIYUN_QWEN_KEY not found. Available env vars: {sorted(all_env_keys)[:20]}...")
     raise EnvironmentError("ALIYUN_QWEN_KEY not found. Please check your environment variables or .env file.")
+print("✅ ALIYUN_QWEN_KEY loaded successfully")
 
 dashscope.api_key = DASHSCOPE_API_KEY
 QWEN_MODEL = "qwen-plus"  # 使用 qwen-plus 模型

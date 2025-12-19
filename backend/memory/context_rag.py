@@ -774,16 +774,16 @@ Agent："记得是只柴犬，但名字我一时想不起来了，叫什么来�
                     # 合并事实
                     best_match["fact"] = "；".join(facts[:2])  # 最多合并2个
                     best_match["confidence"] = min(0.9, best_match["confidence"] + 0.1)  # 稍微提升置信度
-        
-        return best_match
+            
+            return best_match
         else:
             # 没有找到匹配，返回默认值
-        return {
-            "fact": None,
-            "confidence": 0.0,
-            "source": None,
-            "context": None
-        }
+            return {
+                "fact": None,
+                "confidence": 0.0,
+                "source": None,
+                "context": None
+            }
     
     def _extract_fact_from_text(self, text: str, query: str) -> Optional[str]:
         """
