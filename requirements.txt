@@ -23,3 +23,6 @@ python-multipart>=0.0.6
 # OpenAI 兼容客户端（用于阿里云 DashScope 兼容模式）
 openai>=1.0.0
 
+# HTTP 请求库（用于 MiniMax API）
+requests>=2.31.0
+
