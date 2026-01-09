@@ -1,8 +1,6 @@
 """
-Style RAG - 风格学习（V2 改进版）
+Style RAG - 风格学习
 分析用户对话风格，让 Agent 逐渐模仿
-
-改进：使用 jieba 中文分词
 """
 
 import json
@@ -11,48 +9,19 @@ from pathlib import Path
 from typing import Dict, List
 from collections import Counter
 
-# 中文分词
-try:
-    import jieba
-    jieba.setLogLevel(jieba.logging.INFO)  # 减少日志输出
-    JIEBA_AVAILABLE = True
-except ImportError:
-    JIEBA_AVAILABLE = False
-    print("⚠️ jieba 未安装，使用简单分词。建议运行: pip install jieba")
-
 
 class StyleRAG:
     """
     用户风格学习系统
     
     功能：
-    1. 统计用户常用词汇（jieba 分词）
+    1. 统计用户常用词汇
     2. 分析句子长度偏好
     3. 检测中英混合程度
     4. 识别 emoji 使用习惯
     5. 提取常用短语
     6. 多用户数据隔离
     """
-    
-    # 停用词表
-    STOPWORDS = {
-        # 中文停用词
-        '的', '了', '是', '在', '我', '你', '他', '她', '它', '们',
-        '这', '那', '有', '和', '与', '及', '等', '也', '都', '就',
-        '着', '过', '啊', '呢', '吧', '吗', '呀', '哦', '嗯', '哈',
-        '把', '被', '让', '给', '对', '跟', '从', '到', '向', '往',
-        '但', '但是', '然而', '不过', '可是', '因为', '所以', '如果',
-        '虽然', '即使', '只要', '只有', '无论', '不管', '除非',
-        '什么', '怎么', '为什么', '哪', '哪里', '哪儿', '多少', '几',
-        '很', '太', '真', '好', '非常', '特别', '比较', '更', '最',
-        '还', '又', '再', '已经', '正在', '刚', '才', '就', '只',
-        '一个', '一些', '一点', '一下', '这个', '那个', '这些', '那些',
-        # 英文停用词
-        'a', 'an', 'the', 'is', 'am', 'are', 'was', 'were', 'be',
-        'to', 'of', 'in', 'on', 'at', 'for', 'with', 'by', 'from',
-        'and', 'or', 'but', 'so', 'if', 'then', 'that', 'this',
-        'it', 'i', 'you', 'he', 'she', 'we', 'they', 'my', 'your',
-    }
     
     def __init__(self, user_id: str = None, base_storage_path: str = "storage/user_data"):
         """
@@ -71,9 +40,6 @@ class StyleRAG:
         
         # 加载现有风格数据
         self.style_data = self._load_style()
-        
-        if JIEBA_AVAILABLE:
-            print("✅ jieba 中文分词已启用")
     
     def set_user_id(self, user_name: str, agent_name: str):
         """
@@ -118,7 +84,7 @@ class StyleRAG:
             message: 用户消息
         """
         
-        # 1. 统计词频（使用 jieba 分词）
+        # 1. 统计词频
         words = self._tokenize(message)
         for word in words:
             self.style_data['vocabulary'][word] = \
@@ -139,16 +105,15 @@ class StyleRAG:
             self.style_data['english_ratio'] = new_ratio
         
         # 4. 统计 emoji
-        emojis = re.findall(r'[😀-🙏🌀-🗿🚀-🛿🤍-🫶]', message)
+        emojis = re.findall(r'[😀-🙏🌀-🗿🚀-🛿]', message)
         for emoji in emojis:
             self.style_data['emoji_usage'][emoji] = \
                 self.style_data['emoji_usage'].get(emoji, 0) + 1
         
-        # 5. 提取常用短语（2-3 个词的组合）
-        if len(words) >= 2:
-            for i in range(len(words) - 1):
-                # 2-gram
-                phrase = f"{words[i]} {words[i+1]}"
+        # 5. 提取常用短语（2-3 个字的组合）
+        for i in range(len(words) - 1):
+            phrase = ' '.join(words[i:i+2])
+            if len(phrase) > 2:  # 过滤太短的
                 self.style_data['common_phrases'][phrase] = \
                     self.style_data['common_phrases'].get(phrase, 0) + 1
         
@@ -243,27 +208,15 @@ class StyleRAG:
         return "、".join(descriptions)
     
     def _tokenize(self, text: str) -> List[str]:
-        """
-        分词（中英文）
-        
-        使用 jieba 进行中文分词，英文按空格分割
-        """
+        """简单分词（中英文）"""
         # 移除标点和 emoji
         text = re.sub(r'[^\w\s]', ' ', text)
-        
-        if JIEBA_AVAILABLE:
-            # 使用 jieba 分词
-            words = jieba.lcut(text)
-        else:
-            # 降级到简单分词
-            words = text.split()
-        
+        # 分词
+        words = text.split()
         # 过滤停用词和单字符
-        words = [
-            w.strip() for w in words 
-            if len(w.strip()) > 1 and w.lower() not in self.STOPWORDS
-        ]
-        
+        stopwords = {'的', '了', '是', '在', '我', '你', '他', '她', '它', 
+                     'a', 'the', 'is', 'am', 'are', 'to', 'of'}
+        words = [w for w in words if len(w) > 1 and w.lower() not in stopwords]
         return words
     
     def get_style_prompt(self) -> str:
@@ -309,10 +262,10 @@ def test_style_rag():
     """测试 Style RAG"""
     
     print("\n" + "="*60)
-    print("🧪 测试 Style RAG (jieba 分词)")
+    print("🧪 测试 Style RAG")
     print("="*60 + "\n")
     
-    style = StyleRAG(user_id="test_jieba")
+    style = StyleRAG()
     
     # 模拟用户消息
     test_messages = [
@@ -321,16 +274,10 @@ def test_style_rag():
         "我担心搞不定，毕竟 deadline 很紧",
         "今天又遇到 bug 了，超级烦 😤",
         "finally 解决了！开心 😊",
-        "下次要 early start，不能再拖了",
-        "今天在公司被主管夸了，方案用的是亮橙色配灰底",
-        "下班还买了杯桂花拿铁庆祝"
+        "下次要 early start，不能再拖了"
     ]
     
     print("📝 学习用户风格...")
-    for msg in test_messages:
-        words = style._tokenize(msg)
-        print(f"   '{msg[:20]}...' → {words}")
-    
     style.learn_from_messages(test_messages)
     
     print("\n📊 风格画像：")
